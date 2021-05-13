@@ -162,7 +162,7 @@ PLACE 0800H
   GUIMenuScale              :
   STRING                    "      PESO      "
   STRING                    "                "
-  STRING                    "1. MUDAR        "
+  STRING                    "                "
   STRING                    "                "
   STRING                    "                "
   STRING                    "                "
@@ -248,13 +248,15 @@ PeriphericsResetCall:
   MOV                       R3, B_CHANGE              ; Guardar Endereço botão change                                                                     
   MOV                       R4, PESO                  ; Guardar Endereço do periférico peso   
   MOV                       R5, 0                     ; Guardar valor a usar nos vários resets dos periféricos
+  MOV                       R6, 0020H                     ; Guardar valor a usar nos vários resets dos periféricos
 
-  ; Mover 0 para todos os periféricos, fazendo o seu reset
+
+  ; Mover 0 para todos os periféricos, e 0 ASCII para o peso, fazendo o seu reset
   MOVB                      [R0], R5
   MOVB                      [R1], R5
   MOVB                      [R2], R5
   MOVB                      [R3], R5
-  MOVB                      [R4], R5
+  MOVB                      [R4], R6
 
   ; Returnar da sub-rotina
   RET
@@ -353,9 +355,10 @@ MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
   CALL                      PrepareDisplayCall        ; Preparar ecrã para mostrar o menu change
   MOV                       R2, GUIMenuChange         ; Guardar em R2 o endereço do menu change
   CALL                      DisplayMenuCall           ; Mostrar Menu balança no Display
-  MOV                       [R2], 0                   ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu
-  MOV                       R0, B_CHANGE              ; Passa [B_CHANGE] como parâmetro para o próximo menu
   MOV                       R1, 0                     ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
+  MOV                       R2, B_CHANGE
+  MOV                       [R2], R1                  ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu
+  MOV                       R0, B_CHANGE              ; Passa [B_CHANGE] como parâmetro para o próximo menu                    
   Call                      MenuChangeCall
   JMP                       MenuScaleCall 
 
@@ -364,14 +367,11 @@ MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
   CMP                       R3, R2                    ; Comparar valor atual do peso, com o valor guardado anteriormente
   MOV                       R2, R3                    ; Criar cópia do valor atual do peso, na próxima iteração será comparada com o novo valor do peso nessa iteração 
 
-  ; Se o peso não mudou comparado com a iteração anterior
-  JNE                       MenuScaleCall
-
   ; Se o peso mudou comparado com a iteração anterior
-  JMP                       DisplayScaleMenu
-  
+  JNE                       DisplayScaleMenu
 
-
+  ; Se o peso não mudou comparado com a iteração anterior
+  JMP                       MenuScaleCall
 
   RET
 
@@ -408,7 +408,18 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
   MOV                       R2, GUIMenuScale          ; Guardar em R2 o endereço do menu balança
   CALL                      DisplayMenuCall           ; Mostrar Menu balança no Display
 
+  MOV                       R0, DisplayBeginning
+  MOV                       R1, 1
+  MOV                       R2, PESO
+  MOV                       R3, 0
+  CALL                      OverwriteDisplayCall
+
   ; Input
+  MOV                       R3, 0
+  MOV                       R0, SEL_NR_MENU
+  MOV                       R1, B_OK
+  MOV                       [R0], R3                  ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                       [R1], R3                  ; Reset do periférico [B_OK] antes de entrar no próximo menu
   MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
   MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
   MOV                       R0, PESO                  ; Guardar endereço do periférico PESO no R0
@@ -428,6 +439,11 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
   CALL                      DisplayMenuCall           ; Mostrar Menu total diário no Display
 
   ; Input
+  MOV                       R3, 0
+  MOV                       R0, SEL_NR_MENU
+  MOV                       R1, B_OK
+  MOV                       [R0], R3                  ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                       [R1], R3                  ; Reset do periférico [B_OK] antes de entrar no próximo menu
   MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
   MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
   CALL                      MenuDailyTotalCall
@@ -442,7 +458,13 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
   CALL                      PrepareDisplayCall        ; Preparar Display para mostrar o menu de reset
   MOV                       R2, GUIMenuReset          ; Guardar em R2 o endereço do menu de reset
   CALL                      DisplayMenuCall           ; Mostrar menu de reset no Display
+
   ; Input
+  MOV                       R3, 0
+  MOV                       R0, SEL_NR_MENU
+  MOV                       R1, B_OK
+  MOV                       [R0], R3                  ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                       [R1], R3                  ; Reset do periférico [B_OK] antes de entrar no próximo menu
   MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
   MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
   CALL                      MenuResetCall
@@ -450,10 +472,29 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
 
   ; Erro
   ChoiceError               :
-  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
-  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+
+  ; Display
   CALL                      PrepareDisplayCall        ; Preparar Display para mostrar o menu erro
   MOV                       R2, GUIMenuError          ; Guardar em R2 o endereço do menu principal
   CALL                      DisplayMenuCall
 
+  ; Input
+  MOV                       R3, 0
+  MOV                       R0, SEL_NR_MENU
+  MOV                       R1, B_OK
+  MOV                       [R0], R3                  ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                       [R1], R3                  ; Reset do periférico [B_OK] antes de entrar no próximo menu
+  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
+  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+  CALL                      MenuErrorCall
+  JMP                       MenuMainCall
+
   RET
+
+
+
+
+
+;MAGIC FORMULA
+;((7 * 16) + E) * 16 + 2
+;https://www.tutorialspoint.com/8085-code-to-convert-binary-number-to-ascii-code
