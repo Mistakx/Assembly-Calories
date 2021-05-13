@@ -12,11 +12,11 @@
 ; Periféricos de Input
 ; É tomada a escolha que os periféricos são todos de palavra, por razões de "Future Proofing"                                                                                            
 
-B_ON_OFF         EQU 0020H                          ; Endereço botão on/off                                          
-SEL_NR_MENU      EQU 0022H                          ; Endereço botão para selecionar a opção nos menus
-B_OK             EQU 0024H                          ; Endereço botão validar escolha
-B_CHANGE         EQU 0026H                          ; Endereço botão change                                                               
-PESO             EQU 0028H                          ; Endereço do periférico peso
+B_ON_OFF         EQU 0020H                            ; Endereço botão on/off                                          
+SEL_NR_MENU      EQU 0022H                            ; Endereço botão para selecionar a opção nos menus
+B_OK             EQU 0024H                            ; Endereço botão validar escolha
+B_CHANGE         EQU 0026H                            ; Endereço botão change                                                               
+PESO             EQU 0028H                            ; Endereço do periférico peso
 
 ; _____________________________________________________________________________________________________________
 
@@ -25,14 +25,14 @@ PESO             EQU 0028H                          ; Endereço do periférico p
 ; 7x16 = 112         
 ; 112 = 0x70                                                                                    
 
-DisplayBeginning EQU 0080H                          ; Endereço onde começa o display
-DisplayEnd       EQU 00EFH                          ; Endereço onde acaba o display. 0x0080 + 0x006F = 0x00EF
+DisplayBeginning EQU 0080H                            ; Endereço onde começa o display
+DisplayEnd       EQU 00EFH                            ; Endereço onde acaba o display. 0x0080 + 0x006F = 0x00EF
 
 ; _____________________________________________________________________________________________________________
 
 ; Stack Pointer
 
-StackPointer     EQU 1FFEH                          ; Endereço do Stack Pointer
+StackPointer     EQU 1FFEH                            ; Endereço do Stack Pointer
 
 ; _____________________________________________________________________________________________________________
 
@@ -40,109 +40,109 @@ StackPointer     EQU 1FFEH                          ; Endereço do Stack Pointer
 
 PLACE 1000H
 
-  TableAveia               :
-  STRING                   "00- AVEIA       "
-  STRING                   "011  056  007  -"
+  TableAveia                :
+  STRING                    "00- AVEIA       "
+  STRING                    "011  056  007  -"
 
-  TablePaoForma            :
-  STRING                   "01- PAO DE FORMA"
-  STRING                   "009  042  003  -"
+  TablePaoForma             :
+  STRING                    "01- PAO DE FORMA"
+  STRING                    "009  042  003  -"
 
-  TableBatata              :
-  STRING                   "02- BATATA      "
-  STRING                   "003  019  000  -"
+  TableBatata               :
+  STRING                    "02- BATATA      "
+  STRING                    "003  019  000  -"
 
-  TableArroz               :
-  STRING                   "03- ARROZ       "
-  STRING                   "007  025  000  -"
+  TableArroz                :
+  STRING                    "03- ARROZ       "
+  STRING                    "007  025  000  -"
     
-  TableFeijao              :
-  STRING                   "04- FEIJAO      "
-  STRING                   "010  013  000  -"
+  TableFeijao               :
+  STRING                    "04- FEIJAO      "
+  STRING                    "010  013  000  -"
 
-  TableLegumes             :
-  STRING                   "05- LEGUMES     "
-  STRING                   "003  007  000  -"
+  TableLegumes              :
+  STRING                    "05- LEGUMES     "
+  STRING                    "003  007  000  -"
 
-  TableTomate              :
-  STRING                   "06- TOMATE      "
-  STRING                   "001  003  000  -"
+  TableTomate               :
+  STRING                    "06- TOMATE      "
+  STRING                    "001  003  000  -"
 
-  TableBanana              :
-  STRING                   "07- BANANA      "
-  STRING                   "001  023  000  -"
+  TableBanana               :
+  STRING                    "07- BANANA      "
+  STRING                    "001  023  000  -"
 
-  TableLaranja             :
-  STRING                   "08- LARANJA     "
-  STRING                   "001  012  000  -"
+  TableLaranja              :
+  STRING                    "08- LARANJA     "
+  STRING                    "001  012  000  -"
 
-  TableMaca                :
-  STRING                   "09- MACA        "
-  STRING                   "001  014  000  -"
+  TableMaca                 :
+  STRING                    "09- MACA        "
+  STRING                    "001  014  000  -"
 
-  TableKiwi                :
-  STRING                   "10- KIWI        "
-  STRING                   "001  015  000  -"
+  TableKiwi                 :
+  STRING                    "10- KIWI        "
+  STRING                    "001  015  000  -"
 
-  TableBolachaChoc         :
-  STRING                   "11- BOLACHA CHOC"
-  STRING                   "009  059  022  -"
+  TableBolachaChoc          :
+  STRING                    "11- BOLACHA CHOC"
+  STRING                    "009  059  022  -"
 
-  TablePizza               :
-  STRING                   "12- PIZZA       "
-  STRING                   "013  025  009  -"
+  TablePizza                :
+  STRING                    "12- PIZZA       "
+  STRING                    "013  025  009  -"
 
-  TableAmendoas            :
-  STRING                   "13- AMENDOAS    "
-  STRING                   "025  006  055  -"
+  TableAmendoas             :
+  STRING                    "13- AMENDOAS    "
+  STRING                    "025  006  055  -"
 
-  TableLinhacas            :
-  STRING                   "14- LINHACAS    "
-  STRING                   "018  034  036  -"
+  TableLinhacas             :
+  STRING                    "14- LINHACAS    "
+  STRING                    "018  034  036  -"
 
-  TableAzeite              :
-  STRING                   "15- AZEITE      "
-  STRING                   "000  000  100  -"
+  TableAzeite               :
+  STRING                    "15- AZEITE      "
+  STRING                    "000  000  100  -"
 
-  TableLMagro              :
-  STRING                   "16- LEITE MAGRO "
-  STRING                   "003  004  000  -"
+  TableLMagro               :
+  STRING                    "16- LEITE MAGRO "
+  STRING                    "003  004  000  -"
 
-  TableWhey                :
-  STRING                   "17- WHEY        "
-  STRING                   "080  008  004  -"
+  TableWhey                 :
+  STRING                    "17- WHEY        "
+  STRING                    "080  008  004  -"
 
-  TableSalmao              :
-  STRING                   "18- SALMAO      "
-  STRING                   "021  000  015  -"
+  TableSalmao               :
+  STRING                    "18- SALMAO      "
+  STRING                    "021  000  015  -"
 
-  TablePescada             :
-  STRING                   "19- PESCADA     "
-  STRING                   "020  000  001  -"
+  TablePescada              :
+  STRING                    "19- PESCADA     "
+  STRING                    "020  000  001  -"
 
-  TableAtum                :
-  STRING                   "20- ATUM        "
-  STRING                   "025  000  002  -"
+  TableAtum                 :
+  STRING                    "20- ATUM        "
+  STRING                    "025  000  002  -"
 
-  TablePorco               :
-  STRING                   "21- PORCO       "
-  STRING                   "022  000  015  -"
+  TablePorco                :
+  STRING                    "21- PORCO       "
+  STRING                    "022  000  015  -"
 
-  TableFrango              :
-  STRING                   "22- FRANGO      "
-  STRING                   "025  000  004  -"
+  TableFrango               :
+  STRING                    "22- FRANGO      "
+  STRING                    "025  000  004  -"
 
-  TablePeru                :
-  STRING                   "23- PERU        "
-  STRING                   "028  000  001  -"
+  TablePeru                 :
+  STRING                    "23- PERU        "
+  STRING                    "028  000  001  -"
 
-  TableOvo                 :
-  STRING                   "24- OVO         "
-  STRING                   "007  000  005  -"
+  TableOvo                  :
+  STRING                    "24- OVO         "
+  STRING                    "007  000  005  -"
 
-  TableQueijo              :
-  STRING                   "25- QUEIJO      "
-  STRING                   "028  000  013  -"
+  TableQueijo               :
+  STRING                    "25- QUEIJO      "
+  STRING                    "028  000  013  -"
 
 ; _____________________________________________________________________________________________________________
 
@@ -150,82 +150,91 @@ PLACE 1000H
 
 PLACE 0800H
 
-  GUIMenuMain              :
-  STRING                   "  MENU INICIAL  "
-  STRING                   "                "
-  STRING                   "1. BALANCA      "
-  STRING                   "2. TOTAL DIARIO "
-  STRING                   "3. RESET        "
-  STRING                   "                "
-  STRING                   "                "
+  GUIMenuMain               :
+  STRING                    "  MENU INICIAL  "
+  STRING                    "                "
+  STRING                    "1. BALANCA      "
+  STRING                    "2. TOTAL DIARIO "
+  STRING                    "3. RESET        "
+  STRING                    "                "
+  STRING                    "                "
 
-  GUIMenuScale             :
-  STRING                   "      PESO      "
-  STRING                   "                "
-  STRING                   "1. MUDAR        "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
+  GUIMenuScale              :
+  STRING                    "      PESO      "
+  STRING                    "                "
+  STRING                    "1. MUDAR        "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
 
-  GUIMenuWeightOverflow    :
-  STRING                   "      ERRO      "
-  STRING                   "                "
-  STRING                   "    OVERFLOW    "
-  STRING                   "   EXCESSO DE   "
-  STRING                   "      PESO      "
-  STRING                   "                "
-  STRING                   "                "
+  GUIMenuWeightOverflow     :
+  STRING                    "      ERRO      "
+  STRING                    "                "
+  STRING                    "    OVERFLOW    "
+  STRING                    "   EXCESSO DE   "
+  STRING                    "      PESO      "
+  STRING                    "                "
+  STRING                    "                "
 
-  GUIMenuError             :
-  STRING                   "      ERRO      "
-  STRING                   "                "
-  STRING                   "     OPCAO      "
-  STRING                   "    INVALIDA    "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
+  GUIMenuError              :
+  STRING                    "      ERRO      "
+  STRING                    "                "
+  STRING                    "     OPCAO      "
+  STRING                    "    INVALIDA    "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
 
-  GUIMenuDailyTotal        :
-  STRING                   "  TOTAL DO DIA  "
-  STRING                   "P:  G           "
-  STRING                   "C:  G           "
-  STRING                   "F:  G           "
-  STRING                   "                "
-  STRING                   "1.META DIARIA   "
-  STRING                   "                "
+  GUIMenuDailyTotal         :
+  STRING                    "  TOTAL DO DIA  "
+  STRING                    "P:  G           "
+  STRING                    "C:  G           "
+  STRING                    "F:  G           "
+  STRING                    "                "
+  STRING                    "1.META DIARIA   "
+  STRING                    "                "
 
-  GUIMenuReset             :
-  STRING                   "  MENU RESET    "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
-  STRING                   "                "
+  GUIMenuReset              :
+  STRING                    "  MENU RESET    "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+
+  GUIMenuChange             :
+  STRING                    "   MENU CHANGE  "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
+  STRING                    "                "
 
 ; _____________________________________________________________________________________________________________
 
 ; Instruções
 
 PLACE 0000H
-  JMP                      Startup
+  JMP                       Startup
 
 
 PLACE 0100H
 
 DisplayResetCall: ; (Display Beginning, DisplayEnd + 1)
   
-  CaraterVazio             EQU 0020H                ; Carater vazio usado para limpar o ecrã
+  CaraterVazio              EQU 0020H                 ; Carater vazio usado para limpar o ecrã
 
-  MOV                      R3, CaraterVazio         ; Guardar em R3 o carater vazio
-  MOV                      [R0], R3                 ; Guardar no display o carater vazio
-  ADD                      R2, 2                    ; Pula para a próxima palavra do menu 
-  ADD                      R0, 2                    ; Pula para a próxima palavra do display
+  MOV                       R3, CaraterVazio          ; Guardar em R3 o carater vazio
+  MOV                       [R0], R3                  ; Guardar no display o carater vazio
+  ADD                       R2, 2                     ; Pula para a próxima palavra do menu 
+  ADD                       R0, 2                     ; Pula para a próxima palavra do display
 
   ; Se ainda não chegou ao fim do display, começar a call de novo
-  CMP                      R0, R1
-  JNE                      DisplayResetCall
+  CMP                       R0, R1
+  JNE                       DisplayResetCall
 
   ; Se chegou ao fim do display, retornar
   RET
@@ -233,150 +242,218 @@ DisplayResetCall: ; (Display Beginning, DisplayEnd + 1)
 PeriphericsResetCall:
 
   ; Mover os endereços dos vários periféricos para os registos
-  MOV                      R0, B_ON_OFF             ; Guardar Endereço botão on/off                                                                     
-  MOV                      R1, SEL_NR_MENU          ; Guardar Endereço botão para selecionar a opção nos menus                                        
-  MOV                      R2, B_OK                 ; Guardar Endereço botão validar escolha                                                           
-  MOV                      R3, B_CHANGE             ; Guardar Endereço botão change                                                                     
-  MOV                      R4, PESO                 ; Guardar Endereço do periférico peso   
-  MOV                      R5, 0                    ; Guardar valor a usar nos vários resets dos periféricos
+  MOV                       R0, B_ON_OFF              ; Guardar Endereço botão on/off                                                                     
+  MOV                       R1, SEL_NR_MENU           ; Guardar Endereço botão para selecionar a opção nos menus                                        
+  MOV                       R2, B_OK                  ; Guardar Endereço botão validar escolha                                                           
+  MOV                       R3, B_CHANGE              ; Guardar Endereço botão change                                                                     
+  MOV                       R4, PESO                  ; Guardar Endereço do periférico peso   
+  MOV                       R5, 0                     ; Guardar valor a usar nos vários resets dos periféricos
 
   ; Mover 0 para todos os periféricos, fazendo o seu reset
-  MOVB                     [R0], R5
-  MOVB                     [R1], R5
-  MOVB                     [R2], R5
-  MOVB                     [R3], R5
-  MOVB                     [R4], R5
+  MOVB                      [R0], R5
+  MOVB                      [R1], R5
+  MOVB                      [R2], R5
+  MOVB                      [R3], R5
+  MOVB                      [R4], R5
 
   ; Returnar da sub-rotina
   RET
 
+
 PrepareDisplayCall: ; (No Input) (DisplayBeginning, DisplayEnd + 1)
-  MOV                      R0, DisplayBeginning     ; Guardar em R0 o endereço do inicio do display
-  MOV                      R1, DisplayEnd           ; Guardar em R1 o endereço do final do display
-  ADD                      R1, 1                    ; Adicionar 1 ao display end, quando o iterador do display chegar a este valor a rotina vai ser indicada a parar
+  MOV                       R0, DisplayBeginning      ; Guardar em R0 o endereço do inicio do display
+  MOV                       R1, DisplayEnd            ; Guardar em R1 o endereço do final do display
+  ADD                       R1, 1                     ; Adicionar 1 ao display end, quando o iterador do display chegar a este valor a rotina vai ser indicada a parar
   RET
 
-Startup:
-  MOV                      SP, StackPointer         ; Guardar o endereço do Stack Pointer no registo SP
+OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOverwrite], BytesAlreadyOverwritten)
+  MOV                       R4, 16
+  CMP                       R3, R4                    ; Verifica se já foram dados overwrite a 16 bytes, ou seja, a linha inteira
+  JNE                       BytesNotAllOverwritten
+  
+  ; Se já foi dado overwrite a todos os bytes da linha
+  RET
 
-  CALL                     PrepareDisplayCall       ; Preparar o display para ser limpo
+  ; Se ainda não foi dado overwrite a todos os bytes da linha
+  BytesNotAllOverwritten    :
+
+  MUL                       R1, R4                    ; Transforma LineToBeOverwritten no padding que será necessário dar ao [DisplayBeginning]
+  ADD                       R0, R1                    ; Muda o [DisplayBeginning] para o ínicio da linha do display onde se quer dar overwrite
+  MOV                       R5, [R2]                  ; Move [ContentToOverwrite] para R5
+  MOV                       [R0], R5                  ; Mover ContentToOverwrite que se quer dar overwrite para o display
+  ADD                       R0, 2
+  ADD                       R2, 2
+  ADD                       R3, 2
+  JMP                       OverwriteDisplayCall
+
+
+Startup:
+  MOV                       SP, StackPointer          ; Guardar o endereço do Stack Pointer no registo SP
+
+  CALL                      PrepareDisplayCall        ; Preparar o display para ser limpo
   ;CALL            DisplayResetCall        ; Chamar a rotina que limpa o display
   ;CALL      PeriphericsResetCall    ; Chamar a rotina que limpa os periféricos
-  CALL                     MainCall                 ; Chama a rotina principal do programa, que gere o estado da máquina
+  CALL                      MainCall                  ; Chama a rotina principal do programa, que gere o estado da máquina
 
-  MOV                      R0, 2000H                ; Guarda o primeiro endereço fora da memória
-  JMP                      R0                       ; Salta para fora da memória, efetivamente acabando o programa
+  MOV                       R0, 2000H                 ; Guarda o primeiro endereço fora da memória
+  JMP                       R0                        ; Salta para fora da memória, efetivamente acabando o programa
 ; TODO: Enable DisplayResetCall, PeriphericsResetCall
 
 CheckTurnOnCall: ; ([B_ON_OFF])
 
-  MOV                      R1, [R0]                 ; Escrever o valor de B_ON_OFF em R1
-  CMP                      R1, 1                    ; Comparar se o B_ON_OFF está igual a 1 (ligado)
-  JNE                      CheckTurnOnCall          ; Se B_ON_OFF estiver desligado, volta a comparar até passar a ligado
+  MOV                       R1, [R0]                  ; Escrever o valor de B_ON_OFF em R1
+  CMP                       R1, 1                     ; Comparar se o B_ON_OFF está igual a 1 (ligado)
+  JNE                       CheckTurnOnCall           ; Se B_ON_OFF estiver desligado, volta a comparar até passar a ligado
   RET
 
 MainCall:
 
   ; B_ON_OFF
-  MOV                      R0, B_ON_OFF             ; Guardar o endereço de B_ON_OFF em R0
-  CALL                     CheckTurnOnCall          ; Verifica continuamente se o butão de ligar foi pressionado
+  MOV                       R0, B_ON_OFF              ; Guardar o endereço de B_ON_OFF em R0
+  CALL                      CheckTurnOnCall           ; Verifica continuamente se o butão de ligar foi pressionado
 
   ; Display
-  CALL                     PrepareDisplayCall       ; Após o butão de ligar ser precionado, preparar display para mostrar o menu principal
-  MOV                      R2, GUIMenuMain          ; Guardar em R2 o endereço do menu principal
-  CALL                     DisplayMenuCall
+  CALL                      PrepareDisplayCall        ; Após o butão de ligar ser precionado, preparar display para mostrar o menu principal
+  MOV                       R2, GUIMenuMain           ; Guardar em R2 o endereço do menu principal
+  CALL                      DisplayMenuCall
 
   ; Menu Input
-  MOV                      R0, SEL_NR_MENU          ; Guardar no R0 o endereço do periférico SEL_NR_MENU
-  MOV                      R1, B_OK                 ; Guardar no R0 o endereço do periférico B_OK
-  CALL                     MenuMainCall             ; Executa a call MainMenu após o butão de ligar ser pressionado
+  MOV                       R0, SEL_NR_MENU           ; Guardar no R0 o endereço do periférico SEL_NR_MENU
+  MOV                       R1, B_OK                  ; Guardar no R0 o endereço do periférico B_OK
+  CALL                      MenuMainCall              ; Executa a call MainMenu após o butão de ligar ser pressionado
 
   RET
 
+
 DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
-  MOV                      R3, [R2]                 ; Guardar em R3 uma palavra do menu a imprimir no display
-  MOV                      [R0], R3                 ; Guardar no display o valor escrito em R3
-  ADD                      R2, 2                    ; Pula para a próxima palavra do menu 
-  ADD                      R0, 2                    ; Pula para a próxima palavra do display
+  MOV                       R3, [R2]                  ; Guardar em R3 uma palavra do menu a imprimir no display
+  MOV                       [R0], R3                  ; Guardar no display o valor escrito em R3
+  ADD                       R2, 2                     ; Pula para a próxima palavra do menu 
+  ADD                       R0, 2                     ; Pula para a próxima palavra do display
 
   ; Se ainda não chegou ao fim do display, começar a call de novo
-  CMP                      R0, R1
-  JNE                      DisplayMenuCall
+  CMP                       R0, R1
+  JNE                       DisplayMenuCall
 
   ; Se chegou ao fim do display, retornar
   RET
 
-MenuScaleCall:
-  MOV                      R7, 4
+MenuChangeCall: ; ([B_CHANGE], TableNumber) 
+  MOV                       R9, 4
+  RET
+  
+MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
+
+  MOV                       R3, [R0]                  ; Guardar valor PESO no R3
+  MOV                       R4, [R1]                  ; Guardar valor B_CHANGE no R4
+  CMP                       R4, 1                     ; Verificar se B_CHANGE foi pressionado
+  JNE                       ChangeNotPressed         
+
+  ; Se o butão change foi pressionado
+  CALL                      PrepareDisplayCall        ; Preparar ecrã para mostrar o menu change
+  MOV                       R2, GUIMenuChange         ; Guardar em R2 o endereço do menu change
+  CALL                      DisplayMenuCall           ; Mostrar Menu balança no Display
+  MOV                       [R2], 0                   ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu
+  MOV                       R0, B_CHANGE              ; Passa [B_CHANGE] como parâmetro para o próximo menu
+  MOV                       R1, 0                     ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
+  Call                      MenuChangeCall
+  JMP                       MenuScaleCall 
+
+  ; Se o butão change não foi pressionado
+  ChangeNotPressed          :
+  CMP                       R3, R2                    ; Comparar valor atual do peso, com o valor guardado anteriormente
+  MOV                       R2, R3                    ; Criar cópia do valor atual do peso, na próxima iteração será comparada com o novo valor do peso nessa iteração 
+
+  ; Se o peso não mudou comparado com a iteração anterior
+  JNE                       MenuScaleCall
+
+  ; Se o peso mudou comparado com a iteração anterior
+  JMP                       DisplayScaleMenu
+  
+
+
+
   RET
 
 MenuDailyTotalCall:
-  MOV                      R8, 4
+  MOV                       R8, 4
   RET
 
 MenuResetCall:
-  MOV                      R9, 4
+  MOV                       R9, 4
   RET
 
 MenuErrorCall:
-  MOV                      R10, 4
+  MOV                       R10, 4
   RET
   
 MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
 
-  MOV                      R2, [R0]                 ; Escrever o valor de SEL_NR_MENU em R2
-  MOV                      R3, [R1]                 ; Escrever o valor de B_OK em R3
+  MOV                       R2, [R0]                  ; Escrever o valor de SEL_NR_MENU em R2
+  MOV                       R3, [R1]                  ; Escrever o valor de B_OK em R3
 
   ; Verificar se o utilizador confirmou a sua escolha
-  CMP                      R3, 1                  ; Verificar se o utilizador primiu o butão de confirmar a escolha
-  JNE                      MenuMainCall             ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
+  CMP                       R3, 1                     ; Verificar se o utilizador primiu o butão de confirmar a escolha
+  JNE                       MenuMainCall              ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
 
   ; Se o utilizador confirmou a escolha
 
   ; Escolha 1 - Menu Balança
-  CMP                      R2, 1          
-  JNE                      DailyTotal               ; Se não foi esta a escolha do utilizador, verifica a próxima
+  CMP                       R2, 1          
+  JNE                       ChoiceDailyTotal          ; Se não foi esta a escolha do utilizador, verifica a próxima
   
   ; Display
-  CALL                     PrepareDisplayCall       ; Preparar ecrã para mostrar o menu balança
-  MOV                      R2, GUIMenuScale         ; Guardar em R2 o endereço do menu balança
-  CALL                     DisplayMenuCall          ; Mostrar Menu balança no Display
+  DisplayScaleMenu          : 
+  CALL                      PrepareDisplayCall        ; Preparar ecrã para mostrar o menu balança
+  MOV                       R2, GUIMenuScale          ; Guardar em R2 o endereço do menu balança
+  CALL                      DisplayMenuCall           ; Mostrar Menu balança no Display
 
   ; Input
-  CALL                     MenuScaleCall
-  JMP                      MenuMainCall
+  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
+  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+  MOV                       R0, PESO                  ; Guardar endereço do periférico PESO no R0
+  MOV                       R1, B_CHANGE              ; Guardar endereço do periférico B_CHANGE no R1
+  MOV                       R2, [R0]                  ; Guardar valor do peso atual
+  CALL                      MenuScaleCall
+  JMP                       MenuMainCall
 
   ; Escolha 2 - Total diário
-  DailyTotal               :
-  CMP                      R2, 2          
-  JNE                      ResetInput               ; Se não foi esta a escolha do utilizador, verifica a próxima
+  ChoiceDailyTotal          :
+  CMP                       R2, 2          
+  JNE                       ChoiceResetInput          ; Se não foi esta a escolha do utilizador, verifica a próxima
 
   ; Display
-  CALL                     PrepareDisplayCall       ; Preparar Display para mostrar o total diário
-  MOV                      R2, GUIMenuDailyTotal    ; Guardar em R2 o endereço do menu total diário
-  CALL                     DisplayMenuCall          ; Mostrar Menu total diário no Display
+  CALL                      PrepareDisplayCall        ; Preparar Display para mostrar o total diário
+  MOV                       R2, GUIMenuDailyTotal     ; Guardar em R2 o endereço do menu total diário
+  CALL                      DisplayMenuCall           ; Mostrar Menu total diário no Display
 
   ; Input
-  CALL                     MenuDailyTotalCall
-  JMP                      MenuMainCall
+  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
+  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+  CALL                      MenuDailyTotalCall
+  JMP                       MenuMainCall
 
   ; Escolha 3 - Reset
-  ResetInput               :
-  CMP                      R2, 3         
-  JNE                      Error                    ; Se não foi esta a escolha do utilizador, não existe próxima, logo mostra um erro
+  ChoiceResetInput          :
+  CMP                       R2, 3         
+  JNE                       ChoiceError               ; Se não foi esta a escolha do utilizador, não existe próxima, logo mostra um erro
 
   ; Display
-  CALL                     PrepareDisplayCall       ; Preparar Display para mostrar o menu de reset
-  MOV                      R2, GUIMenuReset         ; Guardar em R2 o endereço do menu de reset
-  CALL                     DisplayMenuCall          ; Mostrar menu de reset no Display
+  CALL                      PrepareDisplayCall        ; Preparar Display para mostrar o menu de reset
+  MOV                       R2, GUIMenuReset          ; Guardar em R2 o endereço do menu de reset
+  CALL                      DisplayMenuCall           ; Mostrar menu de reset no Display
   ; Input
-  CALL                     MenuResetCall
-  JMP                      MenuMainCall
+  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
+  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+  CALL                      MenuResetCall
+  JMP                       MenuMainCall
 
   ; Erro
-  Error                    :
-  CALL                     PrepareDisplayCall       ; Preparar Display para mostrar o menu erro
-  MOV                      R2, GUIMenuError         ; Guardar em R2 o endereço do menu principal
-  CALL                     DisplayMenuCall
+  ChoiceError               :
+  MOV                       R2, 0                     ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
+  MOV                       R3, 0                     ; Reset do valor do butão B_OK antes de entrar no próximo menu
+  CALL                      PrepareDisplayCall        ; Preparar Display para mostrar o menu erro
+  MOV                       R2, GUIMenuError          ; Guardar em R2 o endereço do menu principal
+  CALL                      DisplayMenuCall
 
   RET
