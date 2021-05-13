@@ -1,4 +1,5 @@
 ; Projecto 2 Arquitetura de Computadores - Balança com calculadora de Macros
+; Note - It's not peripherics, it's peripherals.
 
 ; Endereçamento do Programa
 ; Pula para o bloco de instruções ->    0 ou 0x0000
@@ -218,6 +219,10 @@ PLACE 0800H
 ; Instruções
 
 PLACE 0000H
+  MOV                       R1, 0010H
+  MOV                       R2, 0011H
+  CMP                       R1, R2
+  JGT                       Startup
   JMP                       Startup
 
 
@@ -248,7 +253,7 @@ PeriphericsResetCall:
   MOV                       R3, B_CHANGE              ; Guardar Endereço botão change                                                                     
   MOV                       R4, PESO                  ; Guardar Endereço do periférico peso   
   MOV                       R5, 0                     ; Guardar valor a usar nos vários resets dos periféricos
-  MOV                       R6, 0020H                     ; Guardar valor a usar nos vários resets dos periféricos
+  MOV                       R6, 0020H                 ; Guardar valor a usar nos vários resets dos periféricos
 
 
   ; Mover 0 para todos os periféricos, e 0 ASCII para o peso, fazendo o seu reset
@@ -340,10 +345,117 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
   ; Se chegou ao fim do display, retornar
   RET
 
-MenuChangeCall: ; ([B_CHANGE], TableNumber) 
-  MOV                       R9, 4
-  RET
+MenuChangeFoodCall: ; ([B_CHANGE], TableNumber) 
   
+  CMP R0, 0
+  JNE ChoicePaoForma
+
+  ChoiceAveia               :
+
+  ChoicePaoForma            :
+  CMP R0, 0
+  JNE ChoiceBatata
+
+  ChoiceBatata              :
+  CMP R0, 0
+  JNE ChoiceArroz
+
+  ChoiceArroz               :
+    CMP R0, 0
+  JNE ChoiceFeijao
+
+  ChoiceFeijao              :
+  CMP R0, 0
+  JNE ChoiceLegumes
+
+  ChoiceLegumes             :
+  CMP R0, 0
+  JNE ChoiceTomate
+
+  ChoiceTomate              :
+  CMP R0, 0
+  JNE ChoiceBanana
+
+  ChoiceBanana              :
+  CMP R0, 0
+  JNE ChoiceLaranja
+
+  ChoiceLaranja             :
+  CMP R0, 0
+  JNE ChoiceMaca
+
+  ChoiceMaca                :
+  CMP R0, 0
+  JNE ChoiceKiwi
+
+  ChoiceKiwi                :
+  CMP R0, 0
+  JNE ChoiceBolachaChoc
+
+  ChoiceBolachaChoc         :
+  CMP R0, 0
+  JNE ChoicePizza
+
+  ChoicePizza               :
+  CMP R0, 0
+  JNE ChoiceAmendoas
+
+  ChoiceAmendoas            :
+  CMP R0, 0
+  JNE ChoiceLinhacas
+
+  ChoiceLinhacas            :
+  CMP R0, 0
+  JNE ChoiceAzeite
+
+  ChoiceAzeite              :
+  CMP R0, 0
+  JNE ChoiceLMagro
+
+  ChoiceLMagro              :
+  CMP R0, 0
+  JNE ChoiceWhey
+
+  ChoiceWhey                :
+  CMP R0, 0
+  JNE ChoiceSalmao
+
+  ChoiceSalmao              :
+  CMP R0, 0
+  JNE ChoicePescada
+
+  ChoicePescada             :
+  CMP R0, 0
+  JNE ChoiceAtum
+
+  ChoiceAtum                :
+  CMP R0, 0
+  JNE ChoicePorco
+
+  ChoicePorco               :
+  CMP R0, 0
+  JNE ChoiceFrango
+
+  ChoiceFrango              :
+  CMP R0, 0
+  JNE ChoicePaoForma
+
+  ChoicePeru                :
+  CMP R0, 0
+  JNE ChoicePaoForma
+
+  ChoiceOvo                 :
+  CMP R0, 0
+  JNE ChoicePaoForma
+
+  ChoiceQueijo              :
+  CMP R0, 0
+  JNE ChoicePaoForma
+
+  ChoiceError               : 
+  CMP R0, 0
+  JNE ChoicePaoForma
+
 MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
 
   MOV                       R3, [R0]                  ; Guardar valor PESO no R3
@@ -359,7 +471,7 @@ MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
   MOV                       R2, B_CHANGE
   MOV                       [R2], R1                  ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu
   MOV                       R0, B_CHANGE              ; Passa [B_CHANGE] como parâmetro para o próximo menu                    
-  Call                      MenuChangeCall
+  Call                      MenuChangeFoodCall
   JMP                       MenuScaleCall 
 
   ; Se o butão change não foi pressionado
