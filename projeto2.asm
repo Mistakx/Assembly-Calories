@@ -218,7 +218,7 @@ PLACE 0100H
 
 DisplayResetCall: ; (Display Beginning, DisplayEnd + 1)
   
-  CaraterVazio                      EQU 0020H                         ; Carater vazio usado para limpar o ecrã
+  CaraterVazio                      EQU 2020H                         ; Carater vazio usado para limpar o ecrã
   MOV                               R3, CaraterVazio                  ; Guardar em R3 o carater vazio
   MOV                               [R0], R3                          ; Guardar no display o carater vazio
   ADD                               R2, 2                             ; Pula para a próxima palavra do menu 
@@ -240,7 +240,7 @@ PeriphericsResetCall:
   MOV                               R3, B_CHANGE                      ; Guardar Endereço botão change                                                                     
   MOV                               R4, PESO                          ; Guardar Endereço do periférico peso   
   MOV                               R5, 0                             ; Guardar valor a usar nos vários resets dos periféricos
-  MOV                               R6, 0020H                         ; Guardar valor a usar no reset do peso
+  MOV                               R6, 2020H                         ; Guardar valor a usar no reset do peso
 
 
   ; Mover 0 para todos os periféricos, e 0 ASCII para o peso, fazendo o seu reset
@@ -285,13 +285,12 @@ Startup:
   MOV                               SP, StackPointer                  ; Guardar o endereço do Stack Pointer no registo SP
 
   CALL                              PrepareDisplayCall                ; Preparar o display para ser limpo
-  ;CALL            DisplayResetCall        ; Chamar a rotina que limpa o display
-  ;CALL      PeriphericsResetCall    ; Chamar a rotina que limpa os periféricos
+  CALL                              DisplayResetCall                  ; Chamar a rotina que limpa o display
+  CALL                              PeriphericsResetCall              ; Chamar a rotina que limpa os periféricos
   CALL                              MainCall                          ; Chama a rotina principal do programa, que gere o estado da máquina
 
   MOV                               R0, 2000H                         ; Guarda o primeiro endereço fora da memória
   JMP                               R0                                ; Salta para fora da memória, efetivamente acabando o programa
-; TODO: Enable DisplayResetCall, PeriphericsResetCall
 
 CheckTurnOnCall: ; ([B_ON_OFF])
 
@@ -333,6 +332,7 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
   RET
 
 MenuChangeFoodCall: ; ((), (), (), (), TableNumber)
+; TODO: After cycling trough all foods, reset back to the first
 
   ; Display
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
