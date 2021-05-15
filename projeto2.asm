@@ -248,7 +248,7 @@ PeriphericsResetCall:
   MOVB                              [R1], R5
   MOVB                              [R2], R5
   MOVB                              [R3], R5
-  MOVB                              [R4], R6
+  MOV                               [R4], R6
 
   ; Returnar da sub-rotina
   RET
@@ -292,8 +292,8 @@ Startup:
   MOV                               R0, 2000H                         ; Guarda o primeiro endereço fora da memória
   JMP                               R0                                ; Salta para fora da memória, efetivamente acabando o programa
 
-CheckTurnOnCall: ; ([B_ON_OFF])
-
+CheckTurnOnCall: 
+  MOV                               R0, B_ON_OFF                      ; Guardar o endereço de B_ON_OFF em R0
   MOV                               R1, [R0]                          ; Escrever o valor de B_ON_OFF em R1
   CMP                               R1, 1                             ; Comparar se o B_ON_OFF está igual a 1 (ligado)
   JNE                               CheckTurnOnCall                   ; Se B_ON_OFF estiver desligado, volta a comparar até passar a ligado
@@ -302,7 +302,6 @@ CheckTurnOnCall: ; ([B_ON_OFF])
 MainCall:
 
   ; B_ON_OFF
-  MOV                               R0, B_ON_OFF                      ; Guardar o endereço de B_ON_OFF em R0
   CALL                              CheckTurnOnCall                   ; Verifica continuamente se o butão de ligar foi pressionado
 
   ; Display
@@ -311,8 +310,6 @@ MainCall:
   CALL                              DisplayMenuCall
 
   ; Menu Input
-  MOV                               R0, SEL_NR_MENU                   ; Guardar no R0 o endereço do periférico SEL_NR_MENU
-  MOV                               R1, B_OK                          ; Guardar no R0 o endereço do periférico B_OK
   CALL                              MenuMainCall                      ; Executa a call MainMenu após o butão de ligar ser pressionado
 
   RET
@@ -331,17 +328,19 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
   ; Se chegou ao fim do display, retornar
   RET
 
-MenuChangeFoodCall: ; ((), (), (), (), TableNumber)
+MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
 ; TODO: After cycling trough all foods, reset back to the first
 
   ; Display
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
-  MOV                               R5, 32                            ; Guarda em R5 o número de carateres da tabela de cada alimento, para ser usado como padding
-  MOV                               R6, R4                            ; Guarda cópia do TableNumber em R6
-  MUL                               R6, R5                            ; Constrói o padding que será usado para aceder ao endereço correto (TableNumber * Nº Carateres Alimento)
+  MOV                               R7, 32                            ; Guarda em R7 o número de carateres da tabela de cada alimento, para ser usado como padding
+  MOV                               R8, R4                            ; Guarda cópia do TableNumber em R8
+  MUL                               R8, R7                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
+  NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
+  NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
+  
   MOV                               R2, TableAveia                    ; Guarda em R2 o endereço da primeira tabela
-  ADD                               R2, R6                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
-  MOV                               R9, 4                             ; TODO: Placeholder instruction
+  ADD                               R2, R8                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
   CALL                              DisplayMenuCall                   ; Mostrar Menu balança no Display
 
   MenuChangeFoodDisplayReady        :
@@ -353,10 +352,11 @@ MenuChangeFoodCall: ; ((), (), (), (), TableNumber)
   JNE                               MenuChangeFoodChangeNotPressed
   
   ; Se o butão B_CHANGE for pressionado
-  ADD                               R4, 1                             ; Passa como parâmetro o nº da tabela do alimento seguinte
-  MOV                               R2, 0
+
   MOV                               R0, B_CHANGE
-  MOV                               [R0], R2                          ; Reset do valor do B_CHANGE
+  MOV                               R1, 0
+  MOV                               [R0], R1                          ; Reset do valor do B_CHANGE
+  ADD                               R6, 1                             ; Passa como parâmetro o nº da tabela do alimento seguinte
   JMP                               MenuChangeFoodCall
  
 
@@ -487,31 +487,59 @@ MenuChangeFoodCall: ; ((), (), (), (), TableNumber)
   ;                                                            não há necessidade de voltar a dar refresh no ecrã, sendo só necessário verificar os inputs.
   RET
 
-MenuScaleCall: ; ([PESO], [B_CHANGE], PesoAnterior)
+MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
-  MOV                               R3, [R0]                          ; Guardar valor PESO no R3
-  MOV                               R4, [R1]                          ; Guardar valor B_CHANGE no R4
-  CMP                               R4, 1                             ; Verificar se B_CHANGE foi pressionado
+  ; Display Scale Menu
+  DisplayScaleMenu                  : 
+  CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
+  MOV                               R2, GUIMenuScale                  ; Guardar em R2 o endereço do menu balança
+  CALL                              DisplayMenuCall                   ; Mostrar Menu balança no Display
+  ; Display Overwrite Peso 
+  MOV                               R0, DisplayBeginning
+  MOV                               R1, 1                             ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                               R2, PESO                          ; Endereço com o conteúdo que irá substituir a linha
+  MOV                               R3, 0                             ; Numero de bytes que já levaram overwrite
+  CALL                              OverwriteDisplayCall
+  ; Display Overwrite Alimento
+  MOV                               R0, DisplayBeginning
+  MOV                               R1, 2                             ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                               R2, TableAveia                    ; Endereço com o conteúdo que irá substituir a linha
+  MOV                               R3, 0                             ; Numero de bytes que já levaram overwrite
+
+  MOV                               R4, 32                            ; Guarda em R4 o número de carateres da tabela de cada alimento, para ser usado como padding
+  MOV                               R5, R7                            ; Guarda cópia do AlimentoAtual em R5
+  MUL                               R5, R4                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia AlimentoAtual * Nº Carateres Alimento)
+  ADD                               R2, R5                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
+  CALL                              OverwriteDisplayCall
+
+  MenuScaleDisplayReady             :
+
+  MOV                               R0, B_CHANGE
+  MOV                               R1, [R0]                          ; Guardar valor B_CHANGE no R1
+  CMP                               R1, 1                             ; Verificar se B_CHANGE foi pressionado
   JNE                               MenuScaleChangeNotPressed         
 
   ; Se o butão change foi pressionado
   DisplayChangeFoodMenu             :
-  MOV                               R4, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
+  MOV                               R6, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
   MOV                               R0, B_CHANGE                              
-  MOV                               [R0], R4                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
+  MOV                               [R0], R6                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
   Call                              MenuChangeFoodCall
   JMP                               MenuScaleCall 
 
   ; Se o butão change não foi pressionado
   MenuScaleChangeNotPressed         :
-  CMP                               R3, R2                            ; Comparar valor atual do peso, com o valor guardado anteriormente
-  MOV                               R2, R3                            ; Criar cópia do valor atual do peso, na próxima iteração será comparada com o novo valor do peso nessa iteração 
+  
+  MOV                               R0, PESO
+  MOV                               R1, [R0]                          ; Guardar valor atual do PESO no R1
+  CMP                               R1, R6                            ; Comparar valor atual do peso, com o valor guardado anteriormente
+  MOV                               R6, R1                            ; Criar cópia do valor atual do peso, na próxima iteração será comparada com o novo valor do peso nessa iteração 
 
   ; Se o peso mudou comparado com a iteração anterior
   JNE                               DisplayScaleMenu
 
   ; Se o peso não mudou comparado com a iteração anterior
-  JMP                               MenuScaleCall
+  JMP                               MenuScaleDisplayReady
 
   RET
 
@@ -527,50 +555,39 @@ MenuErrorCall:
   MOV                               R10, 4
   RET
   
-MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
+MenuMainCall:
 
-  MOV                               R2, [R0]                          ; Escrever o valor de SEL_NR_MENU em R2
-  MOV                               R3, [R1]                          ; Escrever o valor de B_OK em R3
+  MOV                               R0, B_OK
+  MOV                               R1, [R0]                          ; Escrever o valor de B_OK em R1
 
   ; Verificar se o utilizador confirmou a sua escolha
-  CMP                               R3, 1                             ; Verificar se o utilizador primiu o butão de confirmar a escolha
+  CMP                               R1, 1                             ; Verificar se o utilizador primiu o butão de confirmar a escolha
   JNE                               MenuMainCall                      ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
 
   ; Se o utilizador confirmou a escolha
+  MOV                               R0, SEL_NR_MENU
+  MOV                               R1, [R0]                          ; Escrever o valor de SEL_NR_MENU em R1
 
   ; Escolha 1 - Menu Balança
-  CMP                               R2, 1          
+  CMP                               R1, 1          
   JNE                               ChoiceDailyTotal                  ; Se não foi esta a escolha do utilizador, verifica a próxima
   
-  ; Display
-  DisplayScaleMenu                  : 
-  CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
-  MOV                               R2, GUIMenuScale                  ; Guardar em R2 o endereço do menu balança
-  CALL                              DisplayMenuCall                   ; Mostrar Menu balança no Display
-
-  MOV                               R0, DisplayBeginning
-  MOV                               R1, 1
-  MOV                               R2, PESO
-  MOV                               R3, 0
-  CALL                              OverwriteDisplayCall
-
   ; Input
-  MOV                               R3, 0
+  MOV                               R1, 0
   MOV                               R0, SEL_NR_MENU
-  MOV                               R1, B_OK
-  MOV                               [R0], R3                          ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
-  MOV                               [R1], R3                          ; Reset do periférico [B_OK] antes de entrar no próximo menu
-  MOV                               R2, 0                             ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
-  MOV                               R3, 0                             ; Reset do valor do butão B_OK antes de entrar no próximo menu
-  MOV                               R0, PESO                          ; Guardar endereço do periférico PESO no R0
-  MOV                               R1, B_CHANGE                      ; Guardar endereço do periférico B_CHANGE no R1
-  MOV                               R2, [R0]                          ; Guardar valor do peso atual
+  MOV                               [R0], R1                          ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                               R0, B_OK
+  MOV                               [R0], R1                          ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  MOV                               R0, PESO
+  MOV                               R6, [R0]                          ; Passar como parâmetro valor do peso atual
+  MOV                               R7, 0                             ; Passar como parâmetro o alimento 0
   CALL                              MenuScaleCall
   JMP                               MenuMainCall
 
   ; Escolha 2 - Total diário
   ChoiceDailyTotal                  :
-  CMP                               R2, 2          
+  CMP                               R1, 2          
   JNE                               ChoiceResetInput                  ; Se não foi esta a escolha do utilizador, verifica a próxima
 
   ; Display
@@ -579,7 +596,7 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
   CALL                              DisplayMenuCall                   ; Mostrar Menu total diário no Display
 
   ; Input
-  MOV                               R3, 0
+  MOV                               R1, 0
   MOV                               R0, SEL_NR_MENU
   MOV                               R1, B_OK
   MOV                               [R0], R3                          ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
@@ -591,7 +608,7 @@ MenuMainCall: ; ([SEL_NR_MENU], [B_OK])
 
   ; Escolha 3 - Reset
   ChoiceResetInput                  :
-  CMP                               R2, 3         
+  CMP                               R1, 3         
   JNE                               MenuMainChoiceError               ; Se não foi esta a escolha do utilizador, não existe próxima, logo mostra um erro
 
   ; Display
