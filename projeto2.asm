@@ -255,6 +255,7 @@ PeriphericsResetCall:
 
 
 PrepareDisplayCall: ; (No Input) (DisplayBeginning, DisplayEnd + 1)
+; Uses R0 - R1
   MOV                               R0, DisplayBeginning              ; Guardar em R0 o endereço do inicio do display
   MOV                               R1, DisplayEnd                    ; Guardar em R1 o endereço do final do display
   ADD                               R1, 1                             ; Adicionar 1 ao display end, quando o iterador do display chegar a este valor a rotina vai ser indicada a parar
@@ -319,7 +320,8 @@ MainCall:
   RET
 
 
-DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
+DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, [MenuToDisplay])
+; Uses R0 - R3
   MOV                               R3, [R2]                          ; Guardar em R3 uma palavra do menu a imprimir no display
   MOV                               [R0], R3                          ; Guardar no display o valor escrito em R3
   ADD                               R2, 2                             ; Pula para a próxima palavra do menu 
@@ -332,21 +334,21 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, MenuToDisplay)
   ; Se chegou ao fim do display, retornar
   RET
 
-MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
+MenuChangeFoodCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
 ; TODO: After cycling trough all foods, reset back to the first
 
   ; Display
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
-  MOV                               R7, 32                            ; Guarda em R7 o número de carateres da tabela de cada alimento, para ser usado como padding
-  MOV                               R8, R6                            ; Guarda cópia do TableNumber em R8
-  MUL                               R8, R7                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
+  MOV                               R4, 32                            ; Guarda em R4 o número de carateres da tabela de cada alimento, para ser usado como padding
+  MOV                               R5, R8                            ; Guarda cópia do TableNumber em R5, a original tem que se manter para poder ser incrementada quando é clicado no B_CHANGE 
+  MUL                               R5, R4                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
 
   
   MOV                               R2, TableAveia                    ; Guarda em R2 o endereço da primeira tabela
-  ADD                               R2, R8                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
+  ADD                               R2, R5                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
   CALL                              DisplayMenuCall                   ; Mostrar Menu balança no Display
 
   MenuChangeFoodDisplayReady        :
@@ -362,7 +364,7 @@ MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
   MOV                               R0, B_CHANGE
   MOV                               R1, 0
   MOV                               [R0], R1                          ; Reset do valor do B_CHANGE
-  ADD                               R6, 1                             ; Passa como parâmetro o nº da tabela do alimento seguinte
+  ADD                               R8, 1                             ; Passa como parâmetro o nº da tabela do alimento seguinte
   JMP                               MenuChangeFoodCall
  
 
@@ -382,33 +384,91 @@ MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
   ChoiceAveia                       :
   CMP                               R0, 0
   JNE                               ChoicePaoForma
+  MOV                               R7, 0
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoicePaoForma                    :
   CMP                               R0, 1
   JNE                               ChoiceBatata
+  MOV                               R7, 1
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoiceBatata                      :
   CMP                               R0, 2
   JNE                               ChoiceArroz
+  MOV                               R7, 2
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoiceArroz                       :
   CMP                               R0, 3
   JNE                               ChoiceFeijao
+  MOV                               R5, 3
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoiceFeijao                      :
   CMP                               R0, 4
   JNE                               ChoiceLegumes
+  MOV                               R7, 4
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoiceLegumes                     :
   CMP                               R0, 5
   JNE                               ChoiceTomate
+  MOV                               R7, 5
+
+  ; Reset
+  MOV                               R0, 0
+  MOV                               R1, SEL_NR_MENU
+  MOV                               [R1], R0                          ; Reset do SEL_NR_MENU
+  MOV                               R1, B_OK
+  MOV                               [R1], R0                          ; Reset do B_OK
+  RET
 
   ChoiceTomate                      :
   CMP                               R0, 6
+  MOV                               R7, 6
+  RET
   JNE                               ChoiceBanana
 
   ChoiceBanana                      :
   CMP                               R0, 7
+  MOV                               R7, 7
+  RET
   JNE                               ChoiceLaranja
 
   ChoiceLaranja                     :
@@ -527,9 +587,9 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   ; Se o butão change foi pressionado
   DisplayChangeFoodMenu             :
-  MOV                               R6, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
+  MOV                               R8, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
   MOV                               R0, B_CHANGE                              
-  MOV                               [R0], R6                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
+  MOV                               [R0], R8                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
   Call                              MenuChangeFoodCall
   JMP                               MenuScaleCall 
 
