@@ -277,7 +277,7 @@ OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOver
 
   ; Se ainda não foi dado overwrite a todos os bytes da linha
   BytesNotAllOverwritten            :
-  MOV R5, [R2] ; Mover valor ContentToOverwrite para R5
+  MOV                               R5, [R2]                          ; Mover valor ContentToOverwrite para R5
   MOV                               [R0], R5                          ; Mover ContentToOverwrite que se quer dar overwrite para o display
   ADD                               R0, 2
   ADD                               R2, 2
@@ -338,7 +338,7 @@ MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
   ; Display
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
   MOV                               R7, 32                            ; Guarda em R7 o número de carateres da tabela de cada alimento, para ser usado como padding
-  MOV                               R8, R4                            ; Guarda cópia do TableNumber em R8
+  MOV                               R8, R6                            ; Guarda cópia do TableNumber em R8
   MUL                               R8, R7                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
