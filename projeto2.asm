@@ -261,8 +261,15 @@ PrepareDisplayCall: ; (No Input) (DisplayBeginning, DisplayEnd + 1)
   RET
 
 OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOverwrite], BytesAlreadyOverwritten)
-  MOV                               R4, 16
-  CMP                               R3, R4                            ; Verifica se já foram dados overwrite a 16 bytes, ou seja, a linha inteira
+
+
+  MOV                               R4, 16                            ; Número de bytes que uma linha do display tem                  
+  MUL                               R1, R4                            ; Transforma a LineToBeOverwritten no padding que será necessário dar ao [DisplayBeginning]
+  ADD                               R0, R1                            ; Muda o [DisplayBeginning] para o ínicio da linha do display onde se quer dar overwrite
+  
+  OverwriteDisplayPrepared          :
+  
+  CMP                               R3, R4                            ; Verifica se já foram dados overwrite a 16 bytes, ou seja, à linha inteira
   JNE                               BytesNotAllOverwritten
   
   ; Se já foi dado overwrite a todos os bytes da linha
@@ -270,15 +277,12 @@ OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOver
 
   ; Se ainda não foi dado overwrite a todos os bytes da linha
   BytesNotAllOverwritten            :
-
-  MUL                               R1, R4                            ; Transforma LineToBeOverwritten no padding que será necessário dar ao [DisplayBeginning]
-  ADD                               R0, R1                            ; Muda o [DisplayBeginning] para o ínicio da linha do display onde se quer dar overwrite
-  MOV                               R5, [R2]                          ; Move [ContentToOverwrite] para R5
+  MOV R5, [R2] ; Mover valor ContentToOverwrite para R5
   MOV                               [R0], R5                          ; Mover ContentToOverwrite que se quer dar overwrite para o display
   ADD                               R0, 2
   ADD                               R2, 2
   ADD                               R3, 2
-  JMP                               OverwriteDisplayCall
+  JMP                               OverwriteDisplayPrepared
 
 
 Startup:
@@ -338,6 +342,8 @@ MenuChangeFoodCall: ; ((), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
   MUL                               R8, R7                            ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
   NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
+  NOP                                                                 ; Instrução 192 simplesmente é pulada no simulador
+
   
   MOV                               R2, TableAveia                    ; Guarda em R2 o endereço da primeira tabela
   ADD                               R2, R8                            ; Adiciona o padding ao endereço da primeira tabela, obtendo a tabela que se quer aceder
