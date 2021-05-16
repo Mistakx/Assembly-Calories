@@ -334,7 +334,9 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, [MenuToDisplay])
   ; Se chegou ao fim do display, retornar
   RET
 
-MenuChangeFoodCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual, TableNumber)
+MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
+; Uses R0 - R8
+; Changes R7 - AlimentoAtual
 ; TODO: After cycling trough all foods, reset back to the first
 
   ; Display
@@ -580,6 +582,24 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   MenuScaleDisplayReady             :
 
+  ; Verificar se o butão B_OK foi pressionado
+  MOV                               R0, B_OK
+  MOV                               R1, [R0]                          ; Guardar valor B_OK no R1
+  CMP                               R1, 1                             ; Verificar se B_OK foi pressionado
+  JNE                               MenuScaleOkNotPressed                 
+
+  ; Se o butão B_OK foi pressionado
+  DisplayChangeFoodMenu             :
+  MOV                               R8, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
+  MOV                               R0, B_CHANGE                              
+  MOV                               [R0], R8                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
+  Call                              MenuChangeFoodCall
+  JMP                               MenuScaleCall 
+
+  ; Se o butão B_OK não foi pressionado
+
+  ; Verificar se o butão change foi pressionado
+  MenuScaleOkNotPressed             :
   MOV                               R0, B_CHANGE
   MOV                               R1, [R0]                          ; Guardar valor B_CHANGE no R1
   CMP                               R1, 1                             ; Verificar se B_CHANGE foi pressionado
