@@ -32,6 +32,14 @@ DisplayEnd       EQU 00EFH                                            ; Endereç
 
 ; _____________________________________________________________________________________________________________
 
+; Calorias
+
+PROTEINA         EQU 0038H
+HIDRATOS         EQU 003AH
+GORDURA          EQU 003CH
+
+; _____________________________________________________________________________________________________________
+
 ; Stack Pointer
 
 StackPointer     EQU 1FFEH                                            ; Endereço do Stack Pointer
@@ -208,6 +216,7 @@ PLACE 0800H
 
 ; _____________________________________________________________________________________________________________
 
+
 ; Instruções
 
 PLACE 0000H
@@ -215,6 +224,22 @@ PLACE 0000H
 
 
 PLACE 0100H
+
+CaloryResetCall:
+  MOV                               R0, 2
+  MOV                               R1, 0038H
+
+  MOV                               [R1], R0
+  ADD                               R1, R0
+
+  MOV                               [R1], R0
+  ADD                               R1, R0
+
+  MOV                               [R1], R0
+  ADD                               R1, R0
+
+  RET
+
 
 DisplayResetCall: ; (Display Beginning, DisplayEnd + 1)
   
@@ -287,11 +312,12 @@ OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOver
 
 
 Startup:
-  MOV                               SP, StackPointer                  ; Guardar o endereço do Stack Pointer no registo SP
-
+  ;MOV                               SP, StackPointer                  ; Guardar o endereço do Stack Pointer no registo SP
   CALL                              PrepareDisplayCall                ; Preparar o display para ser limpo
   CALL                              DisplayResetCall                  ; Chamar a rotina que limpa o display
   CALL                              PeriphericsResetCall              ; Chamar a rotina que limpa os periféricos
+  ;CALL                              CaloryResetCall                   ; Chama a rotina que dá reset às calorias gravadas em memória
+
   CALL                              MainCall                          ; Chama a rotina principal do programa, que gere o estado da máquina
 
   MOV                               R0, 2000H                         ; Guarda o primeiro endereço fora da memória
@@ -335,9 +361,11 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, [MenuToDisplay])
   RET
 
 MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
-; Uses R0 - R8
-; Changes R7 - AlimentoAtual
-; TODO: After cycling trough all foods, reset back to the first
+  ; R4 Guarda o número de carateres da tabela de cada alimento, para ser usado como padding
+  ; R5 Guarda cópia do TableNumber, a original tem que se manter para poder ser incrementada quando é clicado no B_CHANGE 
+  ; R6 não é alterado, mas MenuScaleCall chama esta rotina, e R6 é um dos seus parâmetros
+  ; R7 - AlimentoAtual é alterado quando é selecionado outro
+  ; TODO: After cycling trough all foods, reset back to the first
 
   ; Display
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
@@ -556,18 +584,38 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   RET
 
 MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
+  ; R4 guarda o número carateres da tabela de cada alimento, para ser usado como padding
+  ; R5 guarda cópia do AlimentoAtual
+  ; R8 é usado numa chamada dentro desta
 
   ; Display Scale Menu
   DisplayScaleMenu                  : 
   CALL                              PrepareDisplayCall                ; Preparar ecrã para mostrar o menu balança
   MOV                               R2, GUIMenuScale                  ; Guardar em R2 o endereço do menu balança
   CALL                              DisplayMenuCall                   ; Mostrar Menu balança no Display
+
   ; Display Overwrite Peso 
+  MOV                               R0, PESO                          ; Move endereço de PESO para o R0
+  MOV                               R1, [R0]                          ; Move valor de PESO para o R1
+  MOV                               R2, 2500
+  SUB                               R1, R2
+  JNN                               MenuScaleNoWeightOverflow
+    
+    ; Se valor do peso excede 2500 gramas
+
+  MOV                               R0, PESO
+  MOV                               R1, 3030H
+  MOV                               [R0], R1                          ; Reset do valor do peso para 0
+
+    ; Se o valor do peso não excede 2500 gramas
+
+  MenuScaleNoWeightOverflow         : 
   MOV                               R0, DisplayBeginning
   MOV                               R1, 1                             ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                               R2, PESO                          ; Endereço com o conteúdo que irá substituir a linha
   MOV                               R3, 0                             ; Numero de bytes que já levaram overwrite
   CALL                              OverwriteDisplayCall
+
   ; Display Overwrite Alimento
   MOV                               R0, DisplayBeginning
   MOV                               R1, 2                             ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -589,24 +637,69 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   JNE                               MenuScaleOkNotPressed                 
 
   ; Se o butão B_OK foi pressionado
-  DisplayChangeFoodMenu             :
-  MOV                               R8, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
-  MOV                               R0, B_CHANGE                              
-  MOV                               [R0], R8                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
-  Call                              MenuChangeFoodCall
-  JMP                               MenuScaleCall 
+   
+  MOV                               R1, PESO
+  MOV                               R0, [R1]                          ; Mover valor do PESO para R0
+  MOV                               R1, 100
+  DIV                               R0, R1                            ; Move a divisão inteira do peso por 100 para R0
+  
+  MOV                               R1, PROTEINA
+  MOV                               R2, HIDRATOS         
+  MOV                               R3, GORDURA  
+
+  MenuScaleAveia                    : 
+  CMP                               R7, 0
+  JNE                               MenuScalePaoDeForma
+
+  MOV                               R5, R0                            ; Cria cópia do peso
+  MOV                               R4, 11                            ; Move valor da proteina para R4
+  MUL                               R5, R4                            ; Multiplica proteina pelo peso e guarda em R5
+  MOV                               R4, [R1]                          ; Move valor da proteina guardada em memória para R4
+  ADD                               R4, R5                            ; Adiciona valor da proteina atual à guardada em memoria 
+  MOV                               [R1], R4                          ; Move novo valor da proteína para a memória
+    
+  MOV                               R5, R0                            ; Cria cópia do peso
+  MOV                               R4, 56                            ; Move valor dos hidratos para R4
+  MUL                               R5, R4                            ; Multiplica hidratos pelo peso e guarda em R5
+  MOV                               R4, [R2]                          ; Move valor dos hidratos guardada em memória para R4
+  ADD                               R4, R5                            ; Adiciona valor dos hidratos atual à guardada em memoria 
+  MOV                               [R2], R4                          ; Move novo valor dos hidratos para a memória
+    
+  MOV                               R5, R0                            ; Cria cópia do peso
+  MOV                               R4, 7                             ; Move valor da gordura para R4
+  MUL                               R5, R4                            ; Multiplica gordura pelo peso e guarda em R5
+  MOV                               R4, [R3]                          ; Move valor da gordura guardada em memória para R4
+  ADD                               R4, R5                            ; Adiciona valor da gordura atual à guardada em memoria 
+  MOV                               [R3], R4                          ; Move novo valor da gordura para a memória 
+
+  MOV                               R0, B_OK
+  MOV                               R1, 0
+  MOV                               [R0], R1                          ; Reset do butão B_OK
+
+  
+
+  RET
+
+  MenuScalePaoDeForma               :
+  CMP                               R7, 1
+  JNE                               MenuScaleBatata
+  RET
+
+  MenuScaleBatata                   : 
+  CMP                               R7, 2
+  RET
 
   ; Se o butão B_OK não foi pressionado
+  MenuScaleOkNotPressed             :
 
   ; Verificar se o butão change foi pressionado
-  MenuScaleOkNotPressed             :
+
   MOV                               R0, B_CHANGE
   MOV                               R1, [R0]                          ; Guardar valor B_CHANGE no R1
   CMP                               R1, 1                             ; Verificar se B_CHANGE foi pressionado
   JNE                               MenuScaleChangeNotPressed         
 
   ; Se o butão change foi pressionado
-  DisplayChangeFoodMenu             :
   MOV                               R8, 0                             ; Passa 0 como parâmetro para mostrar o primeiro menu da tabela
   MOV                               R0, B_CHANGE                              
   MOV                               [R0], R8                          ; Reset do periférico [B_CHANGE] antes de entrar no próximo menu                                   
