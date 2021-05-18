@@ -187,14 +187,14 @@ PLACE 0800H
   STRING                             "                "
   STRING                             "                "
 
-  GUIMenuError                       :
+  GUIMenuChoiceError                 :
   STRING                             "      ERRO      "
   STRING                             "                "
   STRING                             "     OPCAO      "
   STRING                             "    INVALIDA    "
   STRING                             "                "
-  STRING                             "                "
-  STRING                             "                "
+  STRING                             "  PRIMA OK PARA "
+  STRING                             "   CONTINUAR    "
 
   GUIMenuDailyTotal                  :
   STRING                             "  TOTAL DO DIA  "
@@ -296,6 +296,29 @@ OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOver
   OverwriteDisplayPrepared           :
   
   CMP                                R3, R4                             ; Verifica se já foram dados overwrite a 16 bytes, ou seja, à linha inteira
+  JNE                                BytesNotAllOverwritten
+  
+  ; Se já foi dado overwrite a todos os bytes da linha
+  RET
+
+  ; Se ainda não foi dado overwrite a todos os bytes da linha
+  BytesNotAllOverwritten             :
+  MOV                                R5, [R2]                           ; Mover valor ContentToOverwrite para R5
+  MOV                                [R0], R5                           ; Mover ContentToOverwrite que se quer dar overwrite para o display
+  ADD                                R0, 2
+  ADD                                R2, 2
+  ADD                                R3, 2
+  JMP                                OverwriteDisplayPrepared
+
+OverwriteDisplayTwoBytesCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOverwrite], BytesAlreadyOverwritten)
+
+  MOV                                R4, 2                              ; Número de bytes que uma linha do display tem                  
+  MUL                                R1, R4                             ; Transforma a LineToBeOverwritten no padding que será necessário dar ao [DisplayBeginning]
+  ADD                                R0, R1                             ; Muda o [DisplayBeginning] para o ínicio da linha do display onde se quer dar overwrite
+  
+  OverwriteDisplayPrepared           :
+  
+  CMP                                R3, R4                             ; Verifica se já foram dados overwrite a 2 bytes
   JNE                                BytesNotAllOverwritten
   
   ; Se já foi dado overwrite a todos os bytes da linha
@@ -715,7 +738,34 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   RET
 
 MenuDailyTotalCall:
-  MOV                                R8, 4
+  ; Display
+  CALL                               PrepareDisplayCall                 ; Preparar Display para mostrar o total diário
+  MOV                                R2, GUIMenuDailyTotal              ; Guardar em R2 o endereço do menu total diário
+  CALL                               DisplayMenuCall                    ; Mostrar Menu total diário no Display
+
+  MOV                                R0, DisplayBeginning
+  MOV                                R1, 1
+  MOV                                R2, PROTEINA
+  MOV                                R2, [R2]
+  MOV                                R3, 0
+  Call                               OverwriteDisplayTwoBytesCall
+
+  MOV                                R0, DisplayBeginning
+  MOV                                R1, 2
+  MOV                                R2, HIDRATOS
+  MOV                                R2, [R2]
+  MOV                                R3, 0
+  Call                               OverwriteDisplayTwoBytesCall
+
+  MOV                                R0, DisplayBeginning
+  MOV                                R1, 3
+  MOV                                R2, GORDURA
+  MOV                                R2, [R2]
+  MOV                                R3, 0
+  Call                               OverwriteDisplayTwoBytesCall
+
+  MenuDailyTotalDisplayReady         : 
+  
   RET
 
 MenuResetCall:
@@ -723,6 +773,7 @@ MenuResetCall:
   CALL                               PrepareDisplayCall                 ; Preparar ecrã para mostrar o menu balança
   MOV                                R2, GUIMenuReset                   ; Guardar em R2 o endereço do menu balança
   CALL                               DisplayMenuCall                    ; Mostrar Menu balança no Display
+
 
   MenuResetDisplayReady              :
 
@@ -737,6 +788,7 @@ MenuResetCall:
 
   MOV                                R0, SEL_NR_MENU
   MOV                                R0, [R0]
+
 
   MenuResetChoiceReset               :
   CMP                                R0, 1
@@ -771,14 +823,15 @@ MenuResetCall:
 
   RET
 
+
   MenuResetChoiceError               :
-  Call                               MenuErrorCall
-  
   MOV                                R0, 0
   MOV                                R1, B_OK
   MOV                                [R1], R0                           ; Reset do B_OK
   MOV                                R1, SEL_NR_MENU
   MOV                                [R1], R0                           ; Reset do SEL_NR_MENU
+
+  Call                               MenuChoiceErrorCall
 
   RET
 
@@ -787,8 +840,31 @@ MenuResetCall:
   MenuResetOkNotPressed              :
   JMP                                MenuResetDisplayReady
 
-MenuErrorCall:
-  MOV                                R10, 4
+MenuChoiceErrorCall:
+  ; Display
+  CALL                               PrepareDisplayCall                 ; Preparar Display para mostrar o menu erro
+  MOV                                R2, GUIMenuChoiceError             ; Guardar em R2 o endereço do menu principal
+  CALL                               DisplayMenuCall
+
+  MenuChoiceErrorDisplayReady        : 
+
+  ; Verifica se o butão B_OK foi pressionado
+  MOV                                R0, B_OK
+  MOV                                R0, [R0]
+  CMP                                R0, 1
+  JNE                                MenuChoiceErrorOkNotPressed
+
+  ; Se o butão B_OK foi pressionado
+  MOV                                R0, 0
+  MOV                                R1, B_OK 
+  MOV                                [R1], R0                           ; Reset do B_OK
+  RET
+
+  ; Se o butão B_OK não foi pressionado
+  MenuChoiceErrorOkNotPressed        : 
+  JMP                                MenuChoiceErrorDisplayReady
+
+  
   RET
   
 MenuMainCall:
@@ -833,11 +909,6 @@ MenuMainCall:
   CMP                                R1, 2          
   JNE                                ChoiceResetInput                   ; Se não foi esta a escolha do utilizador, verifica a próxima
 
-  ; Display
-  CALL                               PrepareDisplayCall                 ; Preparar Display para mostrar o total diário
-  MOV                                R2, GUIMenuDailyTotal              ; Guardar em R2 o endereço do menu total diário
-  CALL                               DisplayMenuCall                    ; Mostrar Menu total diário no Display
-
   ; Input
   MOV                                R1, 0
   MOV                                R0, SEL_NR_MENU
@@ -873,11 +944,6 @@ MenuMainCall:
   ; Erro
   MenuMainChoiceError                :
 
-  ; Display
-  CALL                               PrepareDisplayCall                 ; Preparar Display para mostrar o menu erro
-  MOV                                R2, GUIMenuError                   ; Guardar em R2 o endereço do menu principal
-  CALL                               DisplayMenuCall
-
   ; Input
   MOV                                R3, 0
   MOV                                R0, SEL_NR_MENU
@@ -886,15 +952,7 @@ MenuMainCall:
   MOV                                [R1], R3                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
   MOV                                R2, 0                              ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
   MOV                                R3, 0                              ; Reset do valor do butão B_OK antes de entrar no próximo menu
-  CALL                               MenuErrorCall
+  CALL                               MenuChoiceErrorCall
   JMP                                MenuMainCall
 
   RET
-
-
-
-
-
-;MAGIC FORMULA
-;((7 * 16) + E) * 16 + 2
-;https://www.tutorialspoint.com/8085-code-to-convert-binary-number-to-ascii-code
