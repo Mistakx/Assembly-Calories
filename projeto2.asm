@@ -14,11 +14,11 @@
 ; Periféricos de Input
 ; É tomada a escolha que os periféricos são todos de palavra, por razões de "Future Proofing"                                                                                            
 
-B_ON_OFF         EQU 0020H                                                                              ; Endereço botão on/off                                          
-SEL_NR_MENU      EQU 0022H                                                                              ; Endereço botão para selecionar a opção nos menus
-B_OK             EQU 0024H                                                                              ; Endereço botão validar escolha
-B_CHANGE         EQU 0026H                                                                              ; Endereço botão change                                                               
-PESO             EQU 0028H                                                                              ; Endereço do periférico peso
+B_ON_OFF           EQU 0020H                                                                            ; Endereço botão on/off                                          
+SEL_NR_MENU        EQU 0022H                                                                            ; Endereço botão para selecionar a opção nos menus
+B_OK               EQU 0024H                                                                            ; Endereço botão validar escolha
+B_CHANGE           EQU 0026H                                                                            ; Endereço botão change                                                               
+PESO               EQU 0028H                                                                            ; Endereço do periférico peso
 
 ; _____________________________________________________________________________________________________________
 
@@ -28,36 +28,42 @@ PESO             EQU 0028H                                                      
 ; 7x16 = 112         
 ; 112 = 0x70                                                                                    
 
-DisplayBeginning EQU 0080H                                                                              ; Endereço onde começa o display
-DisplayEnd       EQU 00EFH                                                                              ; Endereço onde acaba o display. 0x0080 + 0x006F = 0x00EF
+DisplayBeginning   EQU 0080H                                                                            ; Endereço onde começa o display
+DisplayEnd         EQU 00EFH                                                                            ; Endereço onde acaba o display. 0x0080 + 0x006F = 0x00EF
 
 ; Number
-DisplayNumber0   EQU 0040H
-DisplayNumber1   EQU 0041H
-DisplayNumber2   EQU 0042H
-DisplayNumber3   EQU 0043H
+DisplayNumber0     EQU 0040H
+DisplayNumber1     EQU 0041H
+DisplayNumber2     EQU 0042H
+DisplayNumber3     EQU 0043H
 
 ; _____________________________________________________________________________________________________________
 
 ; Calorias
 
 ; Total
-CALORIAS         EQU 0030H
-PROTEINA         EQU 0032H
-HIDRATOS         EQU 0034H
-GORDURA          EQU 0036H
+CALORIAS           EQU 0030H
+PROTEINA           EQU 0032H
+HIDRATOS           EQU 0034H
+GORDURA            EQU 0036H
 
 ; Meta
-META_CALORIAS    EQU 0038H
-META_PROTEINA    EQU 003AH
-META_HIDRATOS    EQU 003CH
-META_GORDURA     EQU 003EH
+META_CALORIAS      EQU 0038H
+META_PROTEINA      EQU 003AH
+META_HIDRATOS      EQU 003CH
+META_GORDURA       EQU 003EH
+
+; Diferença Meta-Calorias
+DIFERENCA_CALORIAS EQU 0044H
+DIFERENCA_PROTEINA EQU 0046H
+DIFERENCA_HIDRATOS EQU 0048H
+DIFERENCA_GORDURA  EQU 004AH
 
 ; _____________________________________________________________________________________________________________
 
 ; Stack Pointer
 
-StackPointer     EQU 1FFEH                                                                              ; Endereço do Stack Pointer
+StackPointer       EQU 1FFEH                                                                            ; Endereço do Stack Pointer
 
 ; _____________________________________________________________________________________________________________
 
@@ -223,10 +229,10 @@ PLACE 0800H
   GUIMenuDailyGoalChange                             :
   STRING                                             "META DIA-ALTERAR"
   STRING                                             "                "
-  STRING                                             "1- P            "
-  STRING                                             "2- H            "
-  STRING                                             "3- G            "
-  STRING                                             "4- C            "
+  STRING                                             "1- PROTEINA     "
+  STRING                                             "2- HIDRATOS     "
+  STRING                                             "3- GORDURA      "
+  STRING                                             "4- CALORIAS     "
   STRING                                             "                "
 
   GUIMenuDailyGoalSee                                :
@@ -918,7 +924,17 @@ MenuDailyGoalSeeCall:
   MOV                                                R2, GUIMenuDailyGoalSee                            ; Guardar em R2 o endereço do menu mudar meta
   CALL                                               DisplayMenuCall                                    ; Mostrar Menu mudar meta no Display 
 
+
+
   MOV                                                R0, META_PROTEINA
+  MOV                                                R0, [R0]                                           ; Move valor META_PROTEINA para R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor PROTEINA para R1
+  SUB                                                R0, R1                                             ; META PROTEINA - PROTEINA
+  MOV                                                R1, DIFERENCA_PROTEINA
+  MOV                                                [R1], R0
+
+  MOV R0, DIFERENCA_PROTEINA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor da PROTEINA em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -926,7 +942,17 @@ MenuDailyGoalSeeCall:
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
 
+
+
   MOV                                                R0, META_HIDRATOS
+  MOV                                                R0, [R0]                                           ; Move valor META_HIDRATOS para R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor HIDRATOS para R1
+  SUB                                                R0, R1                                             ; META_HIDRATOS - HIDRATOS
+  MOV                                                R1, DIFERENCA_HIDRATOS
+  MOV                                                [R1], R0
+
+  MOV R0, DIFERENCA_HIDRATOS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do HIDRATOS em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 3                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -934,7 +960,18 @@ MenuDailyGoalSeeCall:
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
 
+
+
+
   MOV                                                R0, META_GORDURA
+  MOV                                                R0, [R0]                                           ; Move valor META_GORDURA para R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor GORDURA para R1
+  SUB                                                R0, R1                                             ; META_GORDURA - GORDURA
+  MOV                                                R1, DIFERENCA_GORDURA
+  MOV                                                [R1], R0
+
+  MOV R0, DIFERENCA_GORDURA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do GORDURA em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 4                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -942,7 +979,17 @@ MenuDailyGoalSeeCall:
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
 
+
+
   MOV                                                R0, META_CALORIAS
+  MOV                                                R0, [R0]                                           ; Move valor META_CALORIAS para R0
+  MOV                                                R1, CALORIAS
+  MOV                                                R1, [R1]                                           ; Move valor CALORIAS para R1
+  SUB                                                R0, R1                                             ; META_CALORIAS - CALORIAS
+  MOV                                                R1, DIFERENCA_CALORIAS
+  MOV                                                [R1], R0
+
+  MOV R0, DIFERENCA_CALORIAS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 6                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -963,6 +1010,7 @@ MenuDailyGoalSeeCall:
   RET
 
 MenuDailyGoalChangeCall:
+
   ; Display
   CALL                                               PrepareDisplayCall                                 ;  preparar display para mostrar o menu mudar meta
   MOV                                                R2, GUIMenuDailyGoalChange                         ; Guardar em R2 o endereço do menu mudar meta
@@ -1161,6 +1209,7 @@ MenuDailyGoalCall:
 
 
 MenuResetCall:
+
   ; Display
   CALL                                               PrepareDisplayCall                                 ; Preparar ecrã para mostrar o menu balança
   MOV                                                R2, GUIMenuReset                                   ; Guardar em R2 o endereço do menu balança
