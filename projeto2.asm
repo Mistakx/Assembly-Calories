@@ -1,6 +1,6 @@
 ; Projecto 2 Arquitetura de Computadores - Balança com calculadora de Macros
 ; Note - It's not peripherics, it's peripherals.
-; Note - Instrução 192 parece que nao executa.
+; Note - Instrução 0192H não executa, bug do simulador.
 
 ; Endereçamento do Programa
 ; Pula para o bloco de instruções ->    0 ou 0x0000
@@ -41,9 +41,16 @@ DisplayNumber3   EQU 0041H
 
 ; Calorias
 
+; Total
 PROTEINA         EQU 0038H
 HIDRATOS         EQU 003AH
 GORDURA          EQU 003CH
+CALORAIS         EQU 003EH
+; Meta
+META_CALORIAS    EQU 0030H
+META_PROTEINA    EQU 0032H
+META_HIDRATOS    EQU 0034H
+META_GORDURA     EQU 0036H
 
 ; _____________________________________________________________________________________________________________
 
@@ -170,27 +177,18 @@ PLACE 0800H
   GUIMenuMain                                        :
   STRING                                             "  MENU INICIAL  "
   STRING                                             "                "
-  STRING                                             "1. BALANCA      "
-  STRING                                             "2. TOTAL DIARIO "
-  STRING                                             "3. RESET        "
-  STRING                                             "                "
+  STRING                                             "1- BALANCA      "
+  STRING                                             "2- TOTAL DIARIO "
+  STRING                                             "3- META DIARIA  "
+  STRING                                             "4- RESET        "
   STRING                                             "                "
 
   GUIMenuScale                                       :
   STRING                                             "      PESO      "
   STRING                                             "                "
+  STRING                                             "    ALIMENTO    "
   STRING                                             "                "
   STRING                                             "                "
-  STRING                                             "                "
-  STRING                                             "                "
-  STRING                                             "                "
-
-  GUIMenuWeightOverflow                              :
-  STRING                                             "      ERRO      "
-  STRING                                             "                "
-  STRING                                             "    OVERFLOW    "
-  STRING                                             "   EXCESSO DE   "
-  STRING                                             "      PESO      "
   STRING                                             "                "
   STRING                                             "                "
 
@@ -209,14 +207,41 @@ PLACE 0800H
   STRING                                             "                "
   STRING                                             "                "
   STRING                                             "                "
-  STRING                                             "1.META DIARIA   "
+  STRING                                             "    CALORIAS    "
+  STRING                                             "                "
+
+  GUIMenuDailyGoal                                   :
+  STRING                                             "    META DIA    "
+  STRING                                             "                "
+  STRING                                             "1- ALTERAR      "
+  STRING                                             "2- VISUALIZAR   "
+  STRING                                             "                "
+  STRING                                             "                "
+  STRING                                             "                "
+
+  GUIMenuDailyGoalChange                             :
+  STRING                                             "META DIA-ALTERAR"
+  STRING                                             "                "
+  STRING                                             "1- P            "
+  STRING                                             "2- H            "
+  STRING                                             "3- G            "
+  STRING                                             "4- C            "
+  STRING                                             "                "
+
+  GUIMenuDailyGoalSee                                :
+  STRING                                             " META DIA - VER "
+  STRING                                             "   P, H, G, C   "
+  STRING                                             "                "
+  STRING                                             "                "
+  STRING                                             "                "
+  STRING                                             "                "
   STRING                                             "                "
 
   GUIMenuReset                                       :
   STRING                                             "   MENU RESET   "
   STRING                                             "                "
-  STRING                                             "1 - RESET       "
-  STRING                                             "2 - MAIN MENU   "
+  STRING                                             "1- RESET        "
+  STRING                                             "2- MAIN MENU    "
   STRING                                             "                "
   STRING                                             "                "
   STRING                                             "                "
@@ -227,16 +252,12 @@ PLACE 0800H
 ; Instruções
 
 PLACE 0000H
-  MOV                                                R0, 0026H 
-  MOV                                                R1, 8
-  MOV                                                [R0], R1
-  CALL                                               ConvertMemoryToASCII
   JMP                                                Startup
 
 
 PLACE 0100H
 
-CaloryResetCall:
+MemoryVariablesResetCall:
   MOV                                                R0, 2
   MOV                                                R1, 0038H
 
@@ -290,7 +311,7 @@ PeriphericsResetCall:
   RET
 
 
-PrepareDisplayCall: ; (No Input) (DisplayBeginning, DisplayEnd + 1)
+PrepareDisplayCall: ; (No Input), (DisplayBeginning, (DisplayEnd + 1)
   ; Uses R0 - R1
   MOV                                                R0, DisplayBeginning                               ; Guardar em R0 o endereço do inicio do display
   MOV                                                R1, DisplayEnd                                     ; Guardar em R1 o endereço do final do display
@@ -298,7 +319,6 @@ PrepareDisplayCall: ; (No Input) (DisplayBeginning, DisplayEnd + 1)
   RET
 
 OverwriteDisplayCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOverwrite], BytesAlreadyOverwritten)
-
 
   MOV                                                R4, 16                                             ; Número de bytes que uma linha do display tem                  
   MUL                                                R1, R4                                             ; Transforma a LineToBeOverwritten no padding que será necessário dar ao [DisplayBeginning]
@@ -344,7 +364,7 @@ ConvertMemoryToASCII: ; ([NumberToConvert])
   MOV                                                R2, 0030H                                          ; Move 48 para o R2
   ADD                                                R1, R2                                             ; Converter cópia do resultado para ASCII
   MOV                                                R2, DisplayNumber1                                 ; Move endereço do DisplayNumber0 para o R2
-  MOVB                                                [R2], R1                                           ; Mover número ASCII para o DisplayNumber0
+  MOVB                                               [R2], R1                                           ; Mover número ASCII para o DisplayNumber0
   MOV                                                R2, 100                                            ; Move 1000 para o R2
   MOD                                                R0, R2                                             ; Guardar resto da divisão em R0
 
@@ -355,7 +375,7 @@ ConvertMemoryToASCII: ; ([NumberToConvert])
   MOV                                                R2, 0030H                                          ; Move 48 para o R2
   ADD                                                R1, R2                                             ; Converter cópia do resultado para ASCII
   MOV                                                R2, DisplayNumber2                                 ; Move endereço do DisplayNumber0 para o R2
-  MOVB                                                [R2], R1                                           ; Mover número ASCII para o DisplayNumber0
+  MOVB                                               [R2], R1                                           ; Mover número ASCII para o DisplayNumber0
   MOV                                                R2, 10                                             ; Move 1000 para o R2
   MOD                                                R0, R2                                             ; Guardar resto da divisão em R0
 
@@ -367,8 +387,8 @@ ConvertMemoryToASCII: ; ([NumberToConvert])
   ADD                                                R1, R2                                             ; Converter cópia do resultado para ASCII
   MOV                                                R2, DisplayNumber3                                 ; Move endereço do DisplayNumber0 para o R2
   MOVB                                               [R2], R1                                           ; Mover número ASCII para o DisplayNumber0
-  MOV                                                R2, 1                                              ; Move 1000 para o R2
-  MOD                                                R0, R2                                             ; Guardar resto da divisão em R0
+
+  RET
 
 OverwriteDisplayFourBytesCall: ; ([DisplayBeginning], LineToBeOverwritten, [ContentToOverwrite], BytesAlreadyOverwritten)
 
@@ -438,6 +458,7 @@ DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, [MenuToDisplay])
 
   ; Se chegou ao fim do display, retornar
   RET
+
 
 MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   ; R4 Guarda o número de carateres da tabela de cada alimento, para ser usado como padding
@@ -673,6 +694,7 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   CALL                                               DisplayMenuCall                                    ; Mostrar Menu balança no Display
 
   ; Display Overwrite Peso 
+  
   MOV                                                R0, PESO                                           ; Move endereço de PESO para o R0
   MOV                                                R1, [R0]                                           ; Move valor de PESO para o R1
   MOV                                                R2, 2500
@@ -685,14 +707,18 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   MOV                                                R1, 0000H
   MOV                                                [R0], R1                                           ; Reset do valor do peso para 0
 
+
     ; Se o valor do peso não excede 2500 gramas
 
-  MenuScaleNoWeightOverflow                          : 
+  MenuScaleNoWeightOverflow                          :
+  MOV                                                R0, PESO
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor do PESO em ASCII
+  
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 1                                              ; Linha a dar overwrite, sendo a primeira a linha 0
-  MOV                                                R2, PESO                                           ; Endereço com o conteúdo que irá substituir a linha
+  MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
-  CALL                                               OverwriteDisplayCall
+  CALL                                               OverwriteDisplayFourBytesCall
 
   ; Display Overwrite Alimento
   MOV                                                R0, DisplayBeginning
@@ -798,6 +824,7 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   RET
 
+
 MenuDailyTotalCall:
 
   ; Display
@@ -805,23 +832,29 @@ MenuDailyTotalCall:
   MOV                                                R2, GUIMenuDailyTotal                              ; Guardar em R2 o endereço do menu total diário
   CALL                                               DisplayMenuCall                                    ; Mostrar Menu total diário no Display
 
+  MOV                                                R0, PROTEINA
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor da proteina em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 1
-  MOV                                                R2, PROTEINA
+  MOV                                                R2, DisplayNumber0
   MOV                                                R3, 0
-  Call                                               OverwriteDisplayFourBytesCall
+  CALL                                               OverwriteDisplayFourBytesCall
 
+  MOV                                                R0, HIDRATOS
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor dos hidratos em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 2
-  MOV                                                R2, HIDRATOS
+  MOV                                                R2, DisplayNumber0
   MOV                                                R3, 0
-  Call                                               OverwriteDisplayFourBytesCall
+  CALL                                               OverwriteDisplayFourBytesCall
 
+  MOV                                                R0, GORDURA
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor da gordura em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 3
-  MOV                                                R2, GORDURA
+  MOV                                                R2, DisplayNumber0
   MOV                                                R3, 0
-  Call                                               OverwriteDisplayFourBytesCall
+  CALL                                               OverwriteDisplayFourBytesCall
 
   MenuDailyTotalDisplayReady                         : 
 
@@ -841,6 +874,264 @@ MenuDailyTotalCall:
   ; Se o B_OK não foi pressionado
   MenuDailyTotalOkNotPressed                         :
   JMP                                                MenuDailyTotalDisplayReady
+
+MenuDailyGoalSeeCall:
+
+  ; Display Scale Menu
+  CALL                                               PrepareDisplayCall                                 ; Preparar ecrã para mostrar o menu mudar meta
+  MOV                                                R2, GUIMenuDailyGoalSee                            ; Guardar em R2 o endereço do menu mudar meta
+  CALL                                               DisplayMenuCall                                    ; Mostrar Menu mudar meta no Display 
+
+  MOV                                                R0, META_PROTEINA
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor da PROTEINA em ASCII
+  MOV                                                R0, DisplayBeginning
+  MOV                                                R1, 1                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
+  MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
+  CALL                                               OverwriteDisplayFourBytesCall
+
+  MOV                                                R0, META_HIDRATOS
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor do HIDRATOS em ASCII
+  MOV                                                R0, DisplayBeginning
+  MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
+  MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
+  CALL                                               OverwriteDisplayFourBytesCall
+
+  MOV                                                R0, META_GORDURA
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor do GORDURA em ASCII
+  MOV                                                R0, DisplayBeginning
+  MOV                                                R1, 3                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
+  MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
+  CALL                                               OverwriteDisplayFourBytesCall
+
+  MOV                                                R0, META_CALORIAS
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
+  MOV                                                R0, DisplayBeginning
+  MOV                                                R1, 7                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
+  MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
+  CALL                                               OverwriteDisplayFourBytesCall
+
+  MenuDailyGoalSeeDisplayReady                       :
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
+
+  ; Verificar se o utilizador confirmou a sua escolha
+  CMP                                                R1, 1                                              ; Verificar se o utilizador primiu o butão de confirmar a escolha
+  JNE                                                MenuDailyGoalSeeDisplayReady                       ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
+  
+  ; Se o utilizador confirmou a escolha
+  RET
+
+MenuDailyGoalChangeCall:
+  ; Display
+  CALL                                               PrepareDisplayCall                                 ;  preparar display para mostrar o menu mudar meta
+  MOV                                                R2, GUIMenuDailyGoalChange                         ; Guardar em R2 o endereço do menu mudar meta
+  CALL                                               DisplayMenuCall
+
+  MenuDailyGoalChangeDisplayReady                    :
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
+
+  ; Verificar se o utilizador confirmou a sua escolha
+  CMP                                                R1, 1                                              ; Verificar se o utilizador primiu o butão de confirmar a escolha
+  JNE                                                MenuDailyGoalChangeDisplayReady                    ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
+
+  ; Se o utilizador confirmou a escolha
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                R1, [R0]                                           ; Escrever o valor de SEL_NR_MENU em R1
+
+
+  ; Escolha 1 - Proteina
+  CMP                                                R1, 1          
+  JNE                                                ChoiceDailyGoalChangeHidratos                      ; Se não foi esta a escolha do utilizador, verifica a próxima
+  
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  ; Mudar valor da meta
+  MOV                                                R0, META_PROTEINA                                  ; Mover para R0 o valor da meta
+  MOV                                                R1, PESO
+  MOV                                                R1, [R1]                                           ; Mover para R1 o valor do PESO atual
+  MOV                                                [R0], R1                                           ; Mover para a meta o valor do PESO atual
+  RET
+  
+
+
+
+
+
+  ; Escolha 2 - Hidratos
+  ChoiceDailyGoalChangeHidratos                      :
+  CMP                                                R1, 2          
+  JNE                                                ChoiceDailyGoalChangeGordura                       ; Se não foi esta a escolha do utilizador, verifica a próxima
+
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  ; Mudar valor da meta
+  MOV                                                R0, META_HIDRATOS                                  ; Mover para R0 o valor da meta
+  MOV                                                R1, PESO
+  MOV                                                R1, [R1]                                           ; Mover para R1 o valor do PESO atual
+  MOV                                                [R0], R1                                           ; Mover para a meta o valor do PESO atual
+  RET
+
+
+
+
+
+  ; Escolha 3 - Gordura
+  ChoiceDailyGoalChangeGordura                       :
+  CMP                                                R1, 3          
+  JNE                                                ChoiceDailyGoalChangeCalorias                      ; Se não foi esta a escolha do utilizador, verifica a próxima
+
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  ; Mudar valor da meta
+  MOV                                                R0, META_GORDURA                                   ; Mover para R0 o valor da meta
+  MOV                                                R1, PESO
+  MOV                                                R1, [R1]                                           ; Mover para R1 o valor do PESO atual
+  MOV                                                [R0], R1                                           ; Mover para a meta o valor do PESO atual
+  RET
+  
+
+
+
+
+
+  ; Escolha 4 - Calorias
+  ChoiceDailyGoalChangeCalorias                      :
+  CMP                                                R1, 4          
+  JNE                                                ChoiceDailyGoalChangeChoiceError                   ; Se não foi esta a escolha do utilizador, verifica a próxima
+
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  ; Mudar valor da meta
+  MOV                                                R0, META_CALORIAS                                  ; Mover para R0 o valor da meta
+  MOV                                                R1, PESO
+  MOV                                                R1, [R1]                                           ; Mover para R1 o valor do PESO atual
+  MOV                                                [R0], R1                                           ; Mover para a meta o valor do PESO atual
+  RET
+
+
+
+
+
+  ; Erro
+  ChoiceDailyGoalChangeChoiceError                   :
+
+  ; Input
+  MOV                                                R3, 5
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R0], R3                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+  CALL                                               MenuChoiceErrorCall
+  RET
+  
+MenuDailyGoalCall:
+
+  ; Display
+  CALL                                               PrepareDisplayCall                                 ; Após o butão de ligar ser pressionado, preparar display para mostrar o menu principal
+  MOV                                                R2, GUIMenuDailyGoal                               ; Guardar em R2 o endereço do menu principal
+  CALL                                               DisplayMenuCall
+
+  MenuDailyGoalDisplayReady                          :
+
+  ; Verificar se o utilizador confirmou a sua escolha
+  MOV                                                R0, B_OK
+  MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
+  CMP                                                R1, 1                                              ; Verificar se o utilizador primiu o butão de confirmar a escolha
+  JNE                                                MenuDailyGoalOkNotPressed                          ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
+
+  ; Se o utilizador confirmou a escolha
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                R1, [R0]                                           ; Escrever o valor de SEL_NR_MENU em R1
+
+
+
+
+
+  ; Escolha 1 - Alterar meta diária
+  CMP                                                R1, 1          
+  JNE                                                ChoiceDailyGoalSee                                 ; Se não foi esta a escolha do utilizador, verifica a próxima
+  
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  CALL                                               GUIMenuDailyGoalChange
+  RET
+
+
+
+
+
+  ; Escolha 2 - Visualizar meta diária
+  ChoiceDailyGoalSee                                 :
+  CMP                                                R1, 2          
+  JNE                                                ChoiceDailyGoalSee                                 ; Se não foi esta a escolha do utilizador, não existe mais nenhuma
+  
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  CALL                                               GUIMenuDailyGoalSee
+  RET
+
+
+
+
+
+  ; Escolha - Erro
+  MenuDailyGoalError                                 :
+
+  ; Input
+  MOV                                                R3, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R0], R3                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+  CALL                                               MenuChoiceErrorCall
+  RET
+
+
+
+
+
+
+  ; Se o B_OK não foi pressionado
+  MenuDailyGoalOkNotPressed                          :
+  JMP                                                MenuDailyGoalDisplayReady
+
 
 MenuResetCall:
   ; Display
@@ -914,6 +1205,7 @@ MenuResetCall:
   MenuResetOkNotPressed                              :
   JMP                                                MenuResetDisplayReady
 
+
 MenuChoiceErrorCall:
 
   ; Display
@@ -939,9 +1231,9 @@ MenuChoiceErrorCall:
   MenuChoiceErrorOkNotPressed                        : 
   JMP                                                MenuChoiceErrorDisplayReady
 
-  
   RET
   
+
 MenuMainCall:
 
   ; Display
@@ -962,6 +1254,10 @@ MenuMainCall:
   MOV                                                R0, SEL_NR_MENU
   MOV                                                R1, [R0]                                           ; Escrever o valor de SEL_NR_MENU em R1
 
+
+
+
+
   ; Escolha 1 - Menu Balança
   CMP                                                R1, 1          
   JNE                                                ChoiceDailyTotal                                   ; Se não foi esta a escolha do utilizador, verifica a próxima
@@ -979,6 +1275,10 @@ MenuMainCall:
   CALL                                               MenuScaleCall
   JMP                                                MenuMainCall
 
+
+
+
+
   ; Escolha 2 - Total diário
   ChoiceDailyTotal                                   :
   CMP                                                R1, 2          
@@ -994,9 +1294,32 @@ MenuMainCall:
   CALL                                               MenuDailyTotalCall
   JMP                                                MenuMainCall
 
-  ; Escolha 3 - Reset
+
+
+
+
+  ; Escolha 3 - Meta diária
+  ChoiceDailyGoal                                    :
+  CMP                                                R1, 3          
+  JNE                                                ChoiceResetInput                                   ; Se não foi esta a escolha do utilizador, verifica a próxima
+
+  ; Input
+  MOV                                                R1, 0
+  MOV                                                R0, SEL_NR_MENU
+  MOV                                                [R0], R1                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
+  MOV                                                R0, B_OK
+  MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
+
+  CALL                                               MenuDailyGoalCall
+  JMP                                                MenuMainCall
+
+
+
+
+
+  ; Escolha 4 - Reset
   ChoiceResetInput                                   :
-  CMP                                                R1, 3         
+  CMP                                                R1, 4         
   JNE                                                MenuMainChoiceError                                ; Se não foi esta a escolha do utilizador, não existe próxima, logo mostra um erro
 
   ; Display
@@ -1010,10 +1333,12 @@ MenuMainCall:
   MOV                                                R1, B_OK
   MOV                                                [R0], R3                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
   MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
-  MOV                                                R2, 0                                              ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
-  MOV                                                R3, 0                                              ; Reset do valor do butão B_OK antes de entrar no próximo menu
   CALL                                               MenuResetCall
   JMP                                                MenuMainCall
+
+
+
+
 
   ; Erro
   MenuMainChoiceError                                :
@@ -1024,8 +1349,6 @@ MenuMainCall:
   MOV                                                R1, B_OK
   MOV                                                [R0], R3                                           ; Reset do periférico [SEL_NR_MENU] antes de entrar no próximo menu
   MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
-  MOV                                                R2, 0                                              ; Reset do valor do butão SEL_NR_MENU antes de entrar no próximo menu
-  MOV                                                R3, 0                                              ; Reset do valor do butão B_OK antes de entrar no próximo menu
   CALL                                               MenuChoiceErrorCall
   JMP                                                MenuMainCall
 
