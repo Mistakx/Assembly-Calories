@@ -459,7 +459,7 @@ Startup:
 
   ; Menu Input
   CALL                                               MenuMainCall                                       ; Executa a call MainMenu após o butão de ligar ser pressionado
-  JMP Startup
+  JMP                                                Startup
 
 CheckTurnOnCall: 
   MOV                                                R0, B_ON_OFF                                       ; Guardar o endereço de B_ON_OFF em R0
@@ -496,9 +496,6 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                R4, 32                                             ; Guarda em R4 o número de carateres da tabela de cada alimento, para ser usado como padding
   MOV                                                R5, R8                                             ; Guarda cópia do TableNumber em R5, a original tem que se manter para poder ser incrementada quando é clicado no B_CHANGE 
   MUL                                                R5, R4                                             ; Constrói o padding que será usado para aceder ao endereço correto (Cópia TableNumber * Nº Carateres Alimento)
-  NOP                                                                                                   ; Instrução 192 simplesmente é pulada no simulador
-  NOP                                                                                                   ; Instrução 192 simplesmente é pulada no simulador
-  NOP                                                                                                   ; Instrução 192 simplesmente é pulada no simulador
 
   
   MOV                                                R2, TableAveia                                     ; Guarda em R2 o endereço da primeira tabela
@@ -923,10 +920,15 @@ MenuDailyGoalSeeCall:
   MOV                                                R1, PROTEINA
   MOV                                                R1, [R1]                                           ; Move valor PROTEINA para R1
   SUB                                                R0, R1                                             ; META PROTEINA - PROTEINA
+  JNN                                                MetaProteinaNaoUltrapassada
+  ; Se a meta foi ultrapassada
+  MOV                                                R0, 0                                              ; Dá override no registo 0, mudando o resultado negativo da meta - macro para 0
+  ; Se a meta não foi ultrapassada
+  MetaProteinaNaoUltrapassada                        :
   MOV                                                R1, DIFERENCA_PROTEINA
   MOV                                                [R1], R0
 
-  MOV R0, DIFERENCA_PROTEINA
+  MOV                                                R0, DIFERENCA_PROTEINA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor da PROTEINA em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -941,10 +943,15 @@ MenuDailyGoalSeeCall:
   MOV                                                R1, HIDRATOS
   MOV                                                R1, [R1]                                           ; Move valor HIDRATOS para R1
   SUB                                                R0, R1                                             ; META_HIDRATOS - HIDRATOS
+  JNN                                                MetaHidratosNaoUltrapassada
+  ; Se a meta foi ultrapassada
+  MOV                                                R0, 0                                              ; Dá override no registo 0, mudando o resultado negativo da meta - macro para 0
+  ; Se a meta não foi ultrapassada
+  MetaHidratosNaoUltrapassada                        :
   MOV                                                R1, DIFERENCA_HIDRATOS
   MOV                                                [R1], R0
 
-  MOV R0, DIFERENCA_HIDRATOS
+  MOV                                                R0, DIFERENCA_HIDRATOS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do HIDRATOS em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 3                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -960,10 +967,15 @@ MenuDailyGoalSeeCall:
   MOV                                                R1, GORDURA
   MOV                                                R1, [R1]                                           ; Move valor GORDURA para R1
   SUB                                                R0, R1                                             ; META_GORDURA - GORDURA
+  JNN                                                MetaGorduraNaoUltrapassada
+  ; Se a meta foi ultrapassada
+  MOV                                                R0, 0                                              ; Dá override no registo 0, mudando o resultado negativo da meta - macro para 0
+  ; Se a meta não foi ultrapassada
+  MetaGorduraNaoUltrapassada                         :
   MOV                                                R1, DIFERENCA_GORDURA
   MOV                                                [R1], R0
 
-  MOV R0, DIFERENCA_GORDURA
+  MOV                                                R0, DIFERENCA_GORDURA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do GORDURA em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 4                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -978,10 +990,15 @@ MenuDailyGoalSeeCall:
   MOV                                                R1, CALORIAS
   MOV                                                R1, [R1]                                           ; Move valor CALORIAS para R1
   SUB                                                R0, R1                                             ; META_CALORIAS - CALORIAS
+  JNN                                                MetaCaloriaNaoUltrapassada
+  ; Se a meta foi ultrapassada
+  MOV                                                R0, 0                                              ; Dá override no registo 0, mudando o resultado negativo da meta - macro para 0
+  ; Se a meta não foi ultrapassada
+  MetaCaloriaNaoUltrapassada                         :
   MOV                                                R1, DIFERENCA_CALORIAS
   MOV                                                [R1], R0
 
-  MOV R0, DIFERENCA_CALORIAS
+  MOV                                                R0, DIFERENCA_CALORIAS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
   MOV                                                R0, DisplayBeginning
   MOV                                                R1, 6                                              ; Linha a dar overwrite, sendo a primeira a linha 0
@@ -1312,16 +1329,16 @@ MenuMainCall:
   MenuMainDisplayReady                               :
 
   ; Verificar se o utilizador desligou o butão On/Off
-  MOV R0, B_ON_OFF
-  MOV R0, [R0]
-  CMP R0, 1
-  JEQ ButtonOnOffTurnedOn
+  MOV                                                R0, B_ON_OFF
+  MOV                                                R0, [R0]
+  CMP                                                R0, 1
+  JEQ                                                ButtonOnOffTurnedOn
 
   ; Se o utilizador desligou o butão On/Off
   RET
 
   ; Se o utilizador não desligou o butão On/Off
-  ButtonOnOffTurnedOn:
+  ButtonOnOffTurnedOn                                :
 
   MOV                                                R0, B_OK
   MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
