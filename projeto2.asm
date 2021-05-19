@@ -32,25 +32,26 @@ DisplayBeginning EQU 0080H                                                      
 DisplayEnd       EQU 00EFH                                                                              ; Endereço onde acaba o display. 0x0080 + 0x006F = 0x00EF
 
 ; Number
-DisplayNumber0   EQU 003EH
-DisplayNumber1   EQU 003FH
-DisplayNumber2   EQU 0040H
-DisplayNumber3   EQU 0041H
+DisplayNumber0   EQU 0040H
+DisplayNumber1   EQU 0041H
+DisplayNumber2   EQU 0042H
+DisplayNumber3   EQU 0043H
 
 ; _____________________________________________________________________________________________________________
 
 ; Calorias
 
 ; Total
-PROTEINA         EQU 0038H
-HIDRATOS         EQU 003AH
-GORDURA          EQU 003CH
-CALORIAS         EQU 003EH
+CALORIAS         EQU 0030H
+PROTEINA         EQU 0032H
+HIDRATOS         EQU 0034H
+GORDURA          EQU 0036H
+
 ; Meta
-META_CALORIAS    EQU 0030H
-META_PROTEINA    EQU 0032H
-META_HIDRATOS    EQU 0034H
-META_GORDURA     EQU 0036H
+META_CALORIAS    EQU 0038H
+META_PROTEINA    EQU 003AH
+META_HIDRATOS    EQU 003CH
+META_GORDURA     EQU 003EH
 
 ; _____________________________________________________________________________________________________________
 
@@ -883,6 +884,14 @@ MenuDailyTotalCall:
   MOV                                                R3, 0
   CALL                                               OverwriteDisplayFourBytesCall
 
+  MOV                                                R0, CALORIAS
+  CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
+  MOV                                                R0, DisplayBeginning
+  MOV                                                R1, 6
+  MOV                                                R2, DisplayNumber0
+  MOV                                                R3, 0
+  CALL                                               OverwriteDisplayFourBytesCall
+
   MenuDailyTotalDisplayReady                         : 
 
   ; Verificar se o B_OK foi pressionado
@@ -936,7 +945,7 @@ MenuDailyGoalSeeCall:
   MOV                                                R0, META_CALORIAS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 5                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 6                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
