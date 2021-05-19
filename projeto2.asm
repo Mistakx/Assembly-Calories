@@ -179,7 +179,7 @@ PLACE 1000H
 
 ; Menus
 
-PLACE 0800H
+PLACE 2000H
 
   GUIMenuMain                                        :
   STRING                                             "  MENU INICIAL  "
@@ -1086,15 +1086,10 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   CMP                                                R1, 1                                              ; Verificar se B_OK foi pressionado
   JNE                                                MenuScaleIntermediaryOkNotPressed                 
   
-  MenuScaleIntermediaryOkNotPressed                  : 
-  JMP                                                MenuScaleOkNotPressed
+
   
   ; Se o butão B_OK foi pressionado
    
-
-
-
-
 
   MOV                                                R3, PESO
   MOV                                                R3, [R3]                                           ; Mover valor do PESO para R3
@@ -1144,6 +1139,13 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   RET
 
 
+
+
+
+
+
+  MenuScaleIntermediaryOkNotPressed                  : 
+  JMP                                                MenuScaleOkNotPressed
 
 
 
@@ -2528,13 +2530,12 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   ; Se o peso mudou comparado com a iteração anterior
   JNE                                                MenuScaleIntermediaryCall
 
-  MenuScaleIntermediaryCall                          : 
-  JMP                                                MenuScaleCall
-
   ; Se o peso não mudou comparado com a iteração anterior
   JMP                                                MenuScaleDisplayReady
 
-  RET
+  MenuScaleIntermediaryCall                          : 
+  JMP                                                MenuScaleCall
+
 
 
 MenuDailyTotalCall:
