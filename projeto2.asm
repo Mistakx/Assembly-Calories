@@ -454,26 +454,18 @@ Startup:
   CALL                                               PeriphericsResetCall                               ; Chamar a rotina que limpa os periféricos
   ;CALL                              CaloryResetCall                   ; Chama a rotina que dá reset às calorias gravadas em memória
 
-  CALL                                               MainCall                                           ; Chama a rotina principal do programa, que gere o estado da máquina
+  ; B_ON_OFF
+  CALL                                               CheckTurnOnCall                                    ; Verifica continuamente se o butão de ligar foi pressionado
 
-  MOV                                                R0, 2000H                                          ; Guarda o primeiro endereço fora da memória
-  JMP                                                R0                                                 ; Salta para fora da memória, efetivamente acabando o programa
+  ; Menu Input
+  CALL                                               MenuMainCall                                       ; Executa a call MainMenu após o butão de ligar ser pressionado
+  JMP Startup
 
 CheckTurnOnCall: 
   MOV                                                R0, B_ON_OFF                                       ; Guardar o endereço de B_ON_OFF em R0
   MOV                                                R1, [R0]                                           ; Escrever o valor de B_ON_OFF em R1
   CMP                                                R1, 1                                              ; Comparar se o B_ON_OFF está igual a 1 (ligado)
   JNE                                                CheckTurnOnCall                                    ; Se B_ON_OFF estiver desligado, volta a comparar até passar a ligado
-  RET
-
-MainCall:
-
-  ; B_ON_OFF
-  CALL                                               CheckTurnOnCall                                    ; Verifica continuamente se o butão de ligar foi pressionado
-
-  ; Menu Input
-  CALL                                               MenuMainCall                                       ; Executa a call MainMenu após o butão de ligar ser pressionado
-
   RET
 
 
@@ -1319,6 +1311,18 @@ MenuMainCall:
 
   MenuMainDisplayReady                               :
 
+  ; Verificar se o utilizador desligou o butão On/Off
+  MOV R0, B_ON_OFF
+  MOV R0, [R0]
+  CMP R0, 1
+  JEQ ButtonOnOffTurnedOn
+
+  ; Se o utilizador desligou o butão On/Off
+  RET
+
+  ; Se o utilizador não desligou o butão On/Off
+  ButtonOnOffTurnedOn:
+
   MOV                                                R0, B_OK
   MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
 
@@ -1427,5 +1431,3 @@ MenuMainCall:
   MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
   CALL                                               MenuChoiceErrorCall
   JMP                                                MenuMainCall
-
-  RET
