@@ -45,7 +45,7 @@ DisplayNumber3   EQU 0041H
 PROTEINA         EQU 0038H
 HIDRATOS         EQU 003AH
 GORDURA          EQU 003CH
-CALORAIS         EQU 003EH
+CALORIAS         EQU 003EH
 ; Meta
 META_CALORIAS    EQU 0030H
 META_PROTEINA    EQU 0032H
@@ -186,8 +186,8 @@ PLACE 0800H
   GUIMenuScale                                       :
   STRING                                             "      PESO      "
   STRING                                             "                "
-  STRING                                             "    ALIMENTO    "
   STRING                                             "                "
+  STRING                                             "    ALIMENTO    "
   STRING                                             "                "
   STRING                                             "                "
   STRING                                             "                "
@@ -297,7 +297,6 @@ PeriphericsResetCall:
   MOV                                                R3, B_CHANGE                                       ; Guardar Endereço botão change                                                                     
   MOV                                                R4, PESO                                           ; Guardar Endereço do periférico peso   
   MOV                                                R5, 0                                              ; Guardar valor a usar nos vários resets dos periféricos
-  MOV                                                R6, 2020H                                          ; Guardar valor a usar no reset do peso
 
 
   ; Mover 0 para todos os periféricos, e 0 ASCII para o peso, fazendo o seu reset
@@ -305,7 +304,7 @@ PeriphericsResetCall:
   MOVB                                               [R1], R5
   MOVB                                               [R2], R5
   MOVB                                               [R3], R5
-  MOV                                                [R4], R6
+  MOV                                                [R4], R5
 
   ; Returnar da sub-rotina
   RET
@@ -414,6 +413,32 @@ OverwriteDisplayFourBytesCall: ; ([DisplayBeginning], LineToBeOverwritten, [Cont
   ADD                                                R3, 2
   JMP                                                OverwriteDisplayFourBytesPrepared
 
+CalculateCalories:
+  MOV                                                R0, 0                                              ; R0 guarda a soma das calorias dos macronutrientes
+
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor proteina para R1
+  MOV                                                R2, 4
+  MUL                                                R1, R2                                             ; Calcula calorias da proteina
+  ADD                                                R0, R1                                             ; Adiciona ao total de calorias
+
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor de hidratos para R1
+  MOV                                                R2, 4
+  MUL                                                R1, R2                                             ; Calcula calorias dos hidratos
+  ADD                                                R0, R1                                             ; Adiciona ao total de calorias
+
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor de gordura para R1
+  MOV                                                R2, 9
+  MUL                                                R1, R2                                             ; Calcula calorias da gordura
+  ADD                                                R0, R1                                             ; Adiciona ao total de calorias
+
+  MOV                                                R1, CALORIAS
+  MOV                                                [R1], R0                                           ; Move total de calorias para a memória
+
+  RET
+
 
 Startup:
   ;MOV                               SP, StackPointer                  ; Guardar o endereço do Stack Pointer no registo SP
@@ -446,7 +471,7 @@ MainCall:
 
 
 DisplayMenuCall: ; (Display Beginning, DisplayEnd + 1, [MenuToDisplay])
-; Uses R0 - R3
+  ; Uses R0 - R3
   MOV                                                R3, [R2]                                           ; Guardar em R3 uma palavra do menu a imprimir no display
   MOV                                                [R0], R3                                           ; Guardar no display o valor escrito em R3
   ADD                                                R2, 2                                              ; Pula para a próxima palavra do menu 
@@ -722,7 +747,7 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   ; Display Overwrite Alimento
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 4                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, TableAveia                                     ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
 
@@ -775,6 +800,8 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   MOV                                                R4, [R3]                                           ; Move valor da gordura guardada em memória para R4
   ADD                                                R4, R5                                             ; Adiciona valor da gordura atual à guardada em memoria 
   MOV                                                [R3], R4                                           ; Move novo valor da gordura para a memória 
+
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
 
   MOV                                                R0, B_OK
   MOV                                                R1, 0
@@ -1273,7 +1300,7 @@ MenuMainCall:
   ; Escolha 2 - Total diário
   ChoiceDailyTotal                                   :
   CMP                                                R1, 2          
-  JNE                                                ChoiceDailyGoal                                   ; Se não foi esta a escolha do utilizador, verifica a próxima
+  JNE                                                ChoiceDailyGoal                                    ; Se não foi esta a escolha do utilizador, verifica a próxima
 
   ; Input
   MOV                                                R1, 0
