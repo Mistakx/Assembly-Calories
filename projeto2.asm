@@ -559,12 +559,10 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                R2, B_OK
   MOV                                                R1, [R2]                                           ; Move valor B_OK para R1
   CMP                                                R1, 1
-  JNE                                                MenuChangeFoodOkNotPressed
+  JNE                                                MenuChangeFoodDisplayReady                         ; Se o butão change não foi clicado, e não foi selecionado nenhum alimento, 
+  ;                                                                                           não há necessidade de voltar a dar refresh no ecrã, sendo só necessário verificar os inputs.
 
   ; Se o butão B_OK foi pressionado
-
-
-
 
 
   ChoiceAveia                                        :
@@ -1029,11 +1027,6 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                R1, B_OK
   MOV                                                [R1], R0                                           ; Reset do B_OK
   Call                                               MenuChoiceErrorCall
-
-  ; Se o butão B_OK não foi pressionado
-  MenuChangeFoodOkNotPressed                         :
-  JMP                                                MenuChangeFoodDisplayReady                         ; Se o butão change não foi clicado, e não foi selecionado nenhum alimento, 
-  ;                                                            não há necessidade de voltar a dar refresh no ecrã, sendo só necessário verificar os inputs.
 
 
 MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
