@@ -1084,8 +1084,11 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   MOV                                                R0, B_OK
   MOV                                                R1, [R0]                                           ; Guardar valor B_OK no R1
   CMP                                                R1, 1                                              ; Verificar se B_OK foi pressionado
-  JNE                                                MenuScaleOkNotPressed                 
-
+  JNE                                                MenuScaleIntermediaryOkNotPressed                 
+  
+  MenuScaleIntermediaryOkNotPressed                  : 
+  JMP                                                MenuScaleOkNotPressed
+  
   ; Se o butão B_OK foi pressionado
    
 
@@ -1145,10 +1148,57 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
 
 
-  MenuScalePaoDeForma                                :
+
+
+
+
+
+  MenuScalePaoDeForma                                : 
   CMP                                                R7, 1
   JNE                                                MenuScaleBatata
+
+  MOV                                                R0, 9
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 42
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 3
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
   RET
+
+
+
+
+
+
 
 
 
@@ -1157,7 +1207,1298 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   MenuScaleBatata                                    : 
   CMP                                                R7, 2
+  JNE                                                MenuScaleArroz
+
+  MOV                                                R0, 3
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 19
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
   RET
+
+
+
+
+
+
+
+
+
+
+  MenuScaleArroz                                     : 
+  CMP                                                R7, 3
+  JNE                                                MenuScaleFeijao
+
+  MOV                                                R0, 7
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 25
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleFeijao                                    : 
+  CMP                                                R7, 4
+  JNE                                                MenuScaleLegumes
+
+  MOV                                                R0, 10
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 13
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleLegumes                                   : 
+  CMP                                                R7, 5
+  JNE                                                MenuScaleTomate
+
+  MOV                                                R0, 3
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 7
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleTomate                                    : 
+  CMP                                                R7, 6
+  JNE                                                MenuScaleBanana
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 3
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleBanana                                    : 
+  MOV                                                R0, 7
+  CMP                                                R7, R0
+  JNE                                                MenuScaleLaranja
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 23
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleLaranja                                   : 
+  MOV                                                R0, 8
+  CMP                                                R7, R0
+  JNE                                                MenuScaleMaca
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 12
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleMaca                                      : 
+  MOV                                                R0, 9
+  CMP                                                R7, R0
+  JNE                                                MenuScaleKiwi
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 14
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleKiwi                                      : 
+  MOV                                                R0, 10
+  CMP                                                R7, R0
+  JNE                                                MenuScaleBolachaChoc
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 15
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleBolachaChoc                               : 
+  MOV                                                R0, 11
+  CMP                                                R7, R0
+  JNE                                                MenuScalePizza
+
+  MOV                                                R0, 9
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 59
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 22
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScalePizza                                     : 
+  MOV                                                R0, 12
+  CMP                                                R7, R0
+  JNE                                                MenuScaleAmendoas
+
+  MOV                                                R0, 13
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 25
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 9
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleAmendoas                                  : 
+  MOV                                                R0, 13
+  CMP                                                R7, R0
+  JNE                                                MenuScaleLinhaca
+
+  MOV                                                R0, 25
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 6
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 55
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleLinhaca                                   : 
+  MOV                                                R0, 14
+  CMP                                                R7, R0
+  JNE                                                MenuScaleAzeite
+
+  MOV                                                R0, 18
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 34
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 36
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+  MenuScaleAzeite                                    :
+  MOV                                                R0, 15
+  CMP                                                R7, R0
+  JNE                                                MenuScaleLeite
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 100
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+  MenuScaleLeite                                     : 
+  MOV                                                R0, 16
+  CMP                                                R7, R0
+  JNE                                                MenuScaleWhey
+
+  MOV                                                R0, 3
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 4
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+  MenuScaleWhey                                      : 
+  MOV                                                R0, 17
+  CMP                                                R7, R0
+  JNE                                                MenuScaleSalmao
+
+  MOV                                                R0, 80
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 8
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 4
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MenuScaleSalmao                                    : 
+  MOV                                                R0, 18
+  CMP                                                R7, R0
+  JNE                                                MenuScalePescada
+
+  MOV                                                R0, 21
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 15
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+
+  MenuScalePescada                                   : 
+  MOV                                                R0, 19
+  CMP                                                R7, R0
+  JNE                                                MenuScaleAtum
+
+  MOV                                                R0, 20
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+  MenuScaleAtum                                      : 
+  MOV                                                R0, 20
+  CMP                                                R7, R0
+  JNE                                                MenuScalePorco
+
+  MOV                                                R0, 25
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 2
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+  MenuScalePorco                                     : 
+  MOV                                                R0, 21
+  CMP                                                R7, R0
+  JNE                                                MenuScaleFrango
+
+  MOV                                                R0, 22
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 15
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+  MenuScaleFrango                                    : 
+  MOV                                                R0, 22
+  CMP                                                R7, R0
+  JNE                                                MenuScalePeru
+
+  MOV                                                R0, 25
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 4
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+  MenuScalePeru                                      : 
+  MOV                                                R0, 23
+  CMP                                                R7, R0
+  JNE                                                MenuScaleOvo
+
+  MOV                                                R0, 28
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 1
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+  MenuScaleOvo                                       : 
+  MOV                                                R0, 24
+  CMP                                                R7, R0
+  JNE                                                MenuScaleQueijo
+
+  MOV                                                R0, 7
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 5
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
+
+
+
+
+
+
+
+  MenuScaleQueijo                                    : 
+  MOV                                                R0, 25
+  CMP                                                R7, R0
+  JNE                                                MenuScaleQueijo
+
+  MOV                                                R0, 28
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
+
+
+  MOV                                                R0, 0
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 13
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
+  CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
+
+  MOV                                                R0, B_OK
+  MOV                                                R1, 0
+  MOV                                                [R0], R1                                           ; Reset do butão B_OK
+
+  RET
+
+
+
 
   ; Se o butão B_OK não foi pressionado
   MenuScaleOkNotPressed                              :
@@ -1185,7 +2526,10 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   MOV                                                R6, R1                                             ; Criar cópia do valor atual do peso, na próxima iteração será comparada com o novo valor do peso nessa iteração 
 
   ; Se o peso mudou comparado com a iteração anterior
-  JNE                                                MenuScaleCall
+  JNE                                                MenuScaleIntermediaryCall
+
+  MenuScaleIntermediaryCall                          : 
+  JMP                                                MenuScaleCall
 
   ; Se o peso não mudou comparado com a iteração anterior
   JMP                                                MenuScaleDisplayReady
