@@ -885,7 +885,7 @@ MenuDailyGoalSeeCall:
   MOV                                                R0, META_PROTEINA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor da PROTEINA em ASCII
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 1                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
@@ -893,7 +893,7 @@ MenuDailyGoalSeeCall:
   MOV                                                R0, META_HIDRATOS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do HIDRATOS em ASCII
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 2                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 3                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
@@ -901,7 +901,7 @@ MenuDailyGoalSeeCall:
   MOV                                                R0, META_GORDURA
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor do GORDURA em ASCII
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 3                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 4                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
@@ -909,7 +909,7 @@ MenuDailyGoalSeeCall:
   MOV                                                R0, META_CALORIAS
   CALL                                               ConvertMemoryToASCII                               ; Converte o valor das calorias em ASCII
   MOV                                                R0, DisplayBeginning
-  MOV                                                R1, 7                                              ; Linha a dar overwrite, sendo a primeira a linha 0
+  MOV                                                R1, 5                                              ; Linha a dar overwrite, sendo a primeira a linha 0
   MOV                                                R2, DisplayNumber0                                 ; Endereço com o conteúdo que irá substituir a linha
   MOV                                                R3, 0                                              ; Numero de bytes que já levaram overwrite
   CALL                                               OverwriteDisplayFourBytesCall
@@ -1064,7 +1064,7 @@ MenuDailyGoalCall:
   MOV                                                R0, B_OK
   MOV                                                R1, [R0]                                           ; Escrever o valor de B_OK em R1
   CMP                                                R1, 1                                              ; Verificar se o utilizador primiu o butão de confirmar a escolha
-  JNE                                                MenuDailyGoalOkNotPressed                          ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
+  JNE                                                MenuDailyGoalDisplayReady                          ; Se o utilizador não clicou confirmar a escolha ainda, voltar a verificar
 
   ; Se o utilizador confirmou a escolha
   MOV                                                R0, SEL_NR_MENU
@@ -1085,7 +1085,7 @@ MenuDailyGoalCall:
   MOV                                                R0, B_OK
   MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
 
-  CALL                                               GUIMenuDailyGoalChange
+  CALL                                               MenuDailyGoalChangeCall
   RET
 
 
@@ -1095,7 +1095,7 @@ MenuDailyGoalCall:
   ; Escolha 2 - Visualizar meta diária
   ChoiceDailyGoalSee                                 :
   CMP                                                R1, 2          
-  JNE                                                ChoiceDailyGoalSee                                 ; Se não foi esta a escolha do utilizador, não existe mais nenhuma
+  JNE                                                MenuDailyGoalError                                 ; Se não foi esta a escolha do utilizador, não existe mais nenhuma
   
   ; Input
   MOV                                                R1, 0
@@ -1104,7 +1104,7 @@ MenuDailyGoalCall:
   MOV                                                R0, B_OK
   MOV                                                [R0], R1                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
 
-  CALL                                               GUIMenuDailyGoalSee
+  CALL                                               MenuDailyGoalSeeCall
   RET
 
 
@@ -1122,15 +1122,6 @@ MenuDailyGoalCall:
   MOV                                                [R1], R3                                           ; Reset do periférico [B_OK] antes de entrar no próximo menu
   CALL                                               MenuChoiceErrorCall
   RET
-
-
-
-
-
-
-  ; Se o B_OK não foi pressionado
-  MenuDailyGoalOkNotPressed                          :
-  JMP                                                MenuDailyGoalDisplayReady
 
 
 MenuResetCall:
@@ -1282,7 +1273,7 @@ MenuMainCall:
   ; Escolha 2 - Total diário
   ChoiceDailyTotal                                   :
   CMP                                                R1, 2          
-  JNE                                                ChoiceResetInput                                   ; Se não foi esta a escolha do utilizador, verifica a próxima
+  JNE                                                ChoiceDailyGoal                                   ; Se não foi esta a escolha do utilizador, verifica a próxima
 
   ; Input
   MOV                                                R1, 0
