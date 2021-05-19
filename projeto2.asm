@@ -259,9 +259,6 @@ PLACE 0800H
 ; Instruções
 
 PLACE 0000H
-  MOV                                                R0, 11
-  MOV                                                R1, 123
-  Call                                               RoundMacros
   JMP                                                Startup
 
 
@@ -450,6 +447,9 @@ CalculateCalories:
   RET
 
 RoundMacros: ; (QuantityIn100) (TotalAmount)
+  ; Uses R0 - R2
+
+
 
   ; Formula = TotalAmount * QuantityIn100
   ; Example: 123 grams * 11 proteina = 1353
@@ -467,6 +467,7 @@ RoundMacros: ; (QuantityIn100) (TotalAmount)
   ; Se o módulo é menor que 50
   MOV                                                R2, 100
   DIV                                                R0, R2
+  RET
 
   ; Se o módulo é maior ou igual a 50
   RoundUp                                            :
@@ -474,7 +475,6 @@ RoundMacros: ; (QuantityIn100) (TotalAmount)
   DIV                                                R0, R2
   MOV                                                R2, 1
   ADD                                                R0, 1
-
   RET
 
 
@@ -1088,40 +1088,50 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   ; Se o butão B_OK foi pressionado
    
-  MOV                                                R1, PESO
-  MOV                                                R0, [R1]                                           ; Mover valor do PESO para R0
-  MOV                                                R1, 100
-  DIV                                                R0, R1                                             ; Move a divisão inteira do peso por 100 para R0
-  
-  MOV                                                R1, PROTEINA
-  MOV                                                R2, HIDRATOS         
-  MOV                                                R3, GORDURA  
+
+
+
+
+
+  MOV                                                R3, PESO
+  MOV                                                R3, [R3]                                           ; Mover valor do PESO para R3
+
+
+
 
   MenuScaleAveia                                     : 
   CMP                                                R7, 0
   JNE                                                MenuScalePaoDeForma
 
-  MOV                                                R5, R0                                             ; Cria cópia do peso
-  MOV                                                R4, 11                                             ; Move valor da proteina para R4
-  MUL                                                R5, R4                                             ; Multiplica proteina pelo peso e guarda em R5
-  MOV                                                R4, [R1]                                           ; Move valor da proteina guardada em memória para R4
-  ADD                                                R4, R5                                             ; Adiciona valor da proteina atual à guardada em memoria 
-  MOV                                                [R1], R4                                           ; Move novo valor da proteína para a memória
-    
-  MOV                                                R5, R0                                             ; Cria cópia do peso
-  MOV                                                R4, 56                                             ; Move valor dos hidratos para R4
-  MUL                                                R5, R4                                             ; Multiplica hidratos pelo peso e guarda em R5
-  MOV                                                R4, [R2]                                           ; Move valor dos hidratos guardada em memória para R4
-  ADD                                                R4, R5                                             ; Adiciona valor dos hidratos atual à guardada em memoria 
-  MOV                                                [R2], R4                                           ; Move novo valor dos hidratos para a memória
-    
-  MOV                                                R5, R0                                             ; Cria cópia do peso
-  MOV                                                R4, 7                                              ; Move valor da gordura para R4
-  MUL                                                R5, R4                                             ; Multiplica gordura pelo peso e guarda em R5
-  MOV                                                R4, [R3]                                           ; Move valor da gordura guardada em memória para R4
-  ADD                                                R4, R5                                             ; Adiciona valor da gordura atual à guardada em memoria 
-  MOV                                                [R3], R4                                           ; Move novo valor da gordura para a memória 
+  MOV                                                R0, 11
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, PROTEINA
+  MOV                                                R1, [R1]                                           ; Move valor da proteina guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da proteina atual à guardada em memoria
+  MOV                                                R1, PROTEINA
+  MOV                                                [R1], R0                                           ; Move novo valor da proteína para a memória
 
+
+  MOV                                                R0, 56
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, HIDRATOS
+  MOV                                                R1, [R1]                                           ; Move valor dos hidratos guardados em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor dos hidratos atuais à guardada em memoria
+  MOV                                                R1, HIDRATOS
+  MOV                                                [R1], R0                                           ; Move novo valor dos hidratos para a memória
+
+
+  MOV                                                R0, 7
+  MOV                                                R1, R3                                             ; Cria cópia do valor do PESO em R1
+  Call                                               RoundMacros                                        ; Guarda valor arredonado da macro em R0
+  MOV                                                R1, GORDURA
+  MOV                                                R1, [R1]                                           ; Move valor da GORDURA guardada em memória para R1
+  ADD                                                R0, R1                                             ; Adiciona valor da GORDURA atual à guardada em memoria
+  MOV                                                R1, GORDURA
+  MOV                                                [R1], R0                                           ; Move novo valor da GORDURA para a memória
+    
   CALL                                               CalculateCalories                                  ; Calcula o valor das calorias
 
   MOV                                                R0, B_OK
@@ -1130,10 +1140,20 @@ MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
 
   RET
 
+
+
+
+
+
   MenuScalePaoDeForma                                :
   CMP                                                R7, 1
   JNE                                                MenuScaleBatata
   RET
+
+
+
+
+
 
   MenuScaleBatata                                    : 
   CMP                                                R7, 2
