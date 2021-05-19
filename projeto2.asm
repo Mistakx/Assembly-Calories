@@ -259,6 +259,9 @@ PLACE 0800H
 ; Instruções
 
 PLACE 0000H
+  MOV                                                R0, 11
+  MOV                                                R1, 123
+  Call                                               RoundMacros
   JMP                                                Startup
 
 
@@ -446,6 +449,34 @@ CalculateCalories:
 
   RET
 
+RoundMacros: ; (QuantityIn100) (TotalAmount)
+
+  ; Formula = TotalAmount * QuantityIn100
+  ; Example: 123 grams * 11 proteina = 1353
+
+  MUL                                                R0, R1                                             ; Guardar resultado de TotalAmount * QuantityIn100 para R0
+  MOV                                                R1, R0                                             ; Copiar resultado de TotalAmount * QuantityIn100 para R1
+  MOV                                                R2, 100
+  MOD                                                R1, R2                                             ; 1253 % 100 = 53
+
+  ; Verifica se o módulo é maior que 50
+  MOV                                                R2, 50
+  CMP                                                R1, R2
+  JGE                                                RoundUp 
+
+  ; Se o módulo é menor que 50
+  MOV                                                R2, 100
+  DIV                                                R0, R2
+
+  ; Se o módulo é maior ou igual a 50
+  RoundUp                                            :
+  MOV                                                R2, 100
+  DIV                                                R0, R2
+  MOV                                                R2, 1
+  ADD                                                R0, 1
+
+  RET
+
 
 Startup:
   ;MOV                               SP, StackPointer                  ; Guardar o endereço do Stack Pointer no registo SP
@@ -532,6 +563,10 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
 
   ; Se o butão B_OK foi pressionado
 
+
+
+
+
   ChoiceAveia                                        :
   CMP                                                R0, 0
   JNE                                                ChoicePaoForma
@@ -558,6 +593,11 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                [R1], R0                                           ; Reset do B_OK
   RET
 
+
+
+
+
+
   ChoiceBatata                                       :
   CMP                                                R0, 2
   JNE                                                ChoiceArroz
@@ -570,6 +610,10 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                R1, B_OK
   MOV                                                [R1], R0                                           ; Reset do B_OK
   RET
+
+
+
+
 
   ChoiceArroz                                        :
   CMP                                                R0, 3
@@ -584,6 +628,11 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                [R1], R0                                           ; Reset do B_OK
   RET
 
+
+
+
+
+
   ChoiceFeijao                                       :
   CMP                                                R0, 4
   JNE                                                ChoiceLegumes
@@ -596,6 +645,10 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                R1, B_OK
   MOV                                                [R1], R0                                           ; Reset do B_OK
   RET
+
+
+
+
 
   ChoiceLegumes                                      :
   CMP                                                R0, 5
@@ -610,99 +663,378 @@ MenuChangeFoodCall: ; ((), (), (), (), (), (), (), (), TableNumber)
   MOV                                                [R1], R0                                           ; Reset do B_OK
   RET
 
+
+
+
+
   ChoiceTomate                                       :
-  CMP                                                R0, 6
-  MOV                                                R7, 6
-  RET
+  MOV                                                R1, 6
+  CMP                                                R0, R1
   JNE                                                ChoiceBanana
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+  
+
+
+
+
+
 
   ChoiceBanana                                       :
-  CMP                                                R0, 7
-  MOV                                                R7, 7
-  RET
+  MOV                                                R1, 7
+  CMP                                                R0, R1
   JNE                                                ChoiceLaranja
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
+
+
 
   ChoiceLaranja                                      :
-  CMP                                                R0, 0
+  MOV                                                R1, 8
+  CMP                                                R0, R1
   JNE                                                ChoiceMaca
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+  
 
   ChoiceMaca                                         :
-  CMP                                                R0, 0
+  MOV                                                R1, 9
+  CMP                                                R0, R1
   JNE                                                ChoiceKiwi
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
 
   ChoiceKiwi                                         :
-  CMP                                                R0, 0
+  MOV                                                R1, 10
+  CMP                                                R0, R1
   JNE                                                ChoiceBolachaChoc
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoiceBolachaChoc                                  :
-  CMP                                                R0, 0
+  MOV                                                R1, 11
+  CMP                                                R0, R1
   JNE                                                ChoicePizza
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoicePizza                                        :
-  CMP                                                R0, 0
+  MOV                                                R1, 12
+  CMP                                                R0, R1
   JNE                                                ChoiceAmendoas
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoiceAmendoas                                     :
-  CMP                                                R0, 0
+  MOV                                                R1, 13
+  CMP                                                R0, R1
   JNE                                                ChoiceLinhacas
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
 
   ChoiceLinhacas                                     :
-  CMP                                                R0, 0
+  MOV                                                R1, 14
+  CMP                                                R0, R1
   JNE                                                ChoiceAzeite
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
 
   ChoiceAzeite                                       :
-  CMP                                                R0, 0
+  MOV                                                R1, 15
+  CMP                                                R0, R1
   JNE                                                ChoiceLMagro
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
 
   ChoiceLMagro                                       :
-  CMP                                                R0, 0
+  MOV                                                R1, 16
+  CMP                                                R0, R1
   JNE                                                ChoiceWhey
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
 
   ChoiceWhey                                         :
-  CMP                                                R0, 0
+  MOV                                                R1, 17
+  CMP                                                R0, R1
   JNE                                                ChoiceSalmao
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
 
   ChoiceSalmao                                       :
-  CMP                                                R0, 0
+  MOV                                                R1, 18
+  CMP                                                R0, R1
   JNE                                                ChoicePescada
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoicePescada                                      :
-  CMP                                                R0, 0
+  MOV                                                R1, 19
+  CMP                                                R0, R1
   JNE                                                ChoiceAtum
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoiceAtum                                         :
-  CMP                                                R0, 0
+  MOV                                                R1, 20
+  CMP                                                R0, R1
   JNE                                                ChoicePorco
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoicePorco                                        :
-  CMP                                                R0, 0
+  MOV                                                R1, 21
+  CMP                                                R0, R1
   JNE                                                ChoiceFrango
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
+
+
 
   ChoiceFrango                                       :
-  CMP                                                R0, 0
+  MOV                                                R1, 22
+  CMP                                                R0, R1
   JNE                                                ChoicePeru
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
 
   ChoicePeru                                         :
-  CMP                                                R0, 0
+  MOV                                                R1, 23
+  CMP                                                R0, R1
   JNE                                                ChoiceOvo
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   ChoiceOvo                                          :
-  CMP                                                R0, 0
+  MOV                                                R1, 24
+  CMP                                                R0, R1
   JNE                                                ChoiceQueijo
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
+
 
   ChoiceQueijo                                       :
-  CMP                                                R0, 0
-  JNE                                                MenuChangeFoodChoiceError
+  MOV                                                R1, 25
+  CMP                                                R0, R1
+  JNE                                                ChoiceQueijo
+  MOV                                                R7, R1
+
+  ; Reset
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  RET
+
+
+
+
 
   MenuChangeFoodChoiceError                          : 
-  CMP                                                R0, 0
-  JNE                                                ChoicePaoForma
+  MOV                                                R0, 0
+  MOV                                                R1, SEL_NR_MENU
+  MOV                                                [R1], R0                                           ; Reset do SEL_NR_MENU
+  MOV                                                R1, B_OK
+  MOV                                                [R1], R0                                           ; Reset do B_OK
+  Call                                               MenuChoiceErrorCall
 
   ; Se o butão B_OK não foi pressionado
   MenuChangeFoodOkNotPressed                         :
   JMP                                                MenuChangeFoodDisplayReady                         ; Se o butão change não foi clicado, e não foi selecionado nenhum alimento, 
   ;                                                            não há necessidade de voltar a dar refresh no ecrã, sendo só necessário verificar os inputs.
-  RET
+
 
 MenuScaleCall: ; ((), (), (), (), (), (), PesoAnterior, AlimentoAtual)
   ; R4 guarda o número carateres da tabela de cada alimento, para ser usado como padding
@@ -1251,6 +1583,8 @@ MenuResetCall:
   MOV                                                [R1], R0                                           ; Reset hidratos 
   MOV                                                R1, GORDURA
   MOV                                                [R1], R0                                           ; Reset gordura
+  MOV                                                R1, CALORIAS
+  MOV                                                [R1], R0                                           ; Reset calorias
   
   MOV                                                R0, 0
   MOV                                                R1, B_OK
